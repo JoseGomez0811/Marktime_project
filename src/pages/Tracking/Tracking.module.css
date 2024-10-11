@@ -1,0 +1,198 @@
+/* Estilos personalizados para el Tracking */
+
+/* Estilo para el botón deshabilitado (aplicable a nivel global) */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Estilos para el DatePicker (aplicable a nivel global) */
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  .react-datepicker__input-container input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .react-datepicker__input-container input:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #3b82f6;
+    border-color: #3b82f6;
+  }
+  
+  /* Estilo para hacer la tabla responsive en dispositivos móviles (aplicable a nivel global) */
+  @media (max-width: 640px) {
+    .overflow-x-auto {
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+    }
+  }
+  
+  /* Animación suave para el cambio de tiempo en el contador */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  :root {
+    --primary-color: #3b82f6; /* Azul */
+    --primary-dark: #2563eb;  /* Azul oscuro */
+    --danger-color: #ef4444;  /* Rojo */
+    --background-color: #f7fafc; /* Fondo suave */
+    --card-background: #ffffff; /* Fondo de tarjetas */
+    --border-color: #e2e8f0; /* Color de borde suave */
+    --text-primary: #1f2937; /* Texto principal */
+    --text-secondary: #4b5563; /* Texto secundario */
+    --transition-speed: 0.3s; /* Velocidad de transición */
+    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+}
+
+/* Reseteo y estilos base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6; /* Espaciado de líneas más generoso */
+    background-color: var(--background-color); /* Fondo de la página */
+}
+  
+  /* Estilo específico para la clase del contador (CSS modularizado) */
+  .timer {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    animation: pulse 2s infinite;
+    text-align: center;
+  }
+  
+  /* CSS modularizado adicional */
+  .container {
+    min-height: 100vh;
+    background-color: #f7fafc;
+    padding: 1rem;
+  }
+  
+  .innerContainer {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .timerCard, .statsCard, .recordsCard {
+    background-color: var(--card-background);
+    box-shadow: var(--box-shadow);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: transform var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out; /* Transición suave */
+    height: 100%; /* Asegura que las tarjetas tengan la misma altura */
+    margin-bottom: 1.5rem; /* Espacio adicional entre tarjetas */
+
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .startButton {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .stopButton {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    text-align: center;
+    align-items: center;
+    font-size: 1.30rem;
+    margin: 3rem;
+  }
+  
+  .recordsCard {
+    margin-top: 2rem;
+  }
+  
+  .recordsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem;
+  }
+  
+  .filterGroup {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .filterSelect, .datePicker {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #f9fafb;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  
+  .table td {
+    background-color: white;
+  }
+  
