@@ -1,0 +1,95 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ffffff; /* Cambié el fondo a blanco para un diseño más limpio */
+    border-right: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+    transition: all 0.3s ease; /* Suave transición en el sidebar */
+  }
+  
+  .sidebarHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .companyLogo {
+    width: 50px; /* Aumenté el tamaño para mejor visibilidad */
+    height: 50px; /* Aumenté el tamaño para mejor visibilidad */
+    margin-right: 10px;
+  }
+  
+  .companyName {
+    font-size: 20px; /* Tamaño de fuente más grande para el nombre de la empresa */
+    font-weight: bold;
+    color: #343a40; /* Color más oscuro para un contraste mejor */
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .userAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #007bff; /* Agregué un borde azul al avatar */
+  }
+  
+  .userName {
+    font-size: 18px; /* Tamaño de fuente más grande para el nombre del usuario */
+    color: #495057; /* Color más suave para el texto del nombre */
+    font-weight: 500; /* Peso de fuente más ligero para un diseño moderno */
+  }
+  
+  .sidebarNav {
+    flex-grow: 1;
+  }
+  
+  .navItem {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px; /* Aumenté el padding para un aspecto más espacioso */
+    color: #495057;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+  }
+  
+  .navItem:hover {
+    background-color: #e9ecef; /* Color de fondo en hover más suave */
+    transform: scale(1.02); /* Efecto de escala en hover */
+  }
+  
+  .navItem svg {
+    margin-right: 10px;
+  }
+  
+  .logoutButton {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px; /* Aumenté el padding para un aspecto más espacioso */
+    background-color: #dc3545; /* Color de fondo rojo para el botón de logout */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+  }
+  
+  .logoutButton:hover {
+    background-color: #c82333; /* Color de fondo más oscuro en hover */
+    transform: scale(1.05); /* Efecto de escala en hover */
+  }
+  
+  .logoutButton svg {
+    margin-right: 10px;
+  }
+  

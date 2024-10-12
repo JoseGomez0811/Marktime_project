@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; 
 import styles from "./Login.module.css"; 
+import { useNavigate } from "react-router-dom";
+import { TRACKING_URL, REGISTER_URL } from "../../constants/urls";
+import {loginWithEmailAndPassword} from "../../../firebase/auth-service";
 
-const Login = () => {
+export function Login() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     correo: "",
     password: "",
@@ -25,11 +30,21 @@ const Login = () => {
     return Object.keys(newErrors).length === 0; 
   };
 
-  const handleSubmit = (event) => {
+  const onSuccess = () => { navigate(TRACKING_URL); };
+
+  const onFail = (_error) => { console.log("LOGIN FAILED, Try Again") };
+
+    
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (validate()) {
+      const result = await loginWithEmailAndPassword(formData.correo, formData.password, onSuccess, onFail);
       console.log("Formulario de login enviado:", formData);
-    }
+      
+    }else {
+      console.log("Campos incorectos");
+  }
   };
 
   const handleChange = (event) => {
@@ -80,11 +95,10 @@ const Login = () => {
           </div>
         </form>
         <div className={styles.registerLinkContainer}>
-          <p>¿No tienes una cuenta? <Link to="/registro" className={styles.registerLink}>Regístrate</Link></p>
+          <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default Login;

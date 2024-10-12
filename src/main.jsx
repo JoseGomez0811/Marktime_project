@@ -1,22 +1,35 @@
 import React from 'react';
 import ReactDOM from "react-dom/client";
-import RegistroUsuario from './pages/Register/Register';
+//import RegistroUsuario from './pages/Register/Register';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import { TRACKING_URL } from "../src/constants/urls"; // Asegúrate de que esta constante esté bien definida
+import { TRACKING_URL, REGISTER_URL, LOGIN_URL } from "../src/constants/urls"; // Asegúrate de que esta constante esté bien definida
+import { Login } from "../src/pages/Login/Login";
+import { RegistroUsuario } from "../src/pages/Register/Register";
 import { Tracking } from "../src/pages/Tracking/Tracking";
 import { Navigate } from "react-router-dom";
-import Login from './pages/Login/Login';
+//import Login from './pages/Login/Login';
+import { Layout } from './pages/Layout/Layout';
+import { UserContextProvider } from './contexts/UserContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <Routes>
-    <Route path="/" element={<Navigate to="/login" />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/" element={<Navigate to={TRACKING_URL} />} />
-    <Route path={TRACKING_URL} element={<Tracking />} />
-    <Route path="/" element={<Navigate to="/registro" />} />
-      <Route path="/registro" element={<RegistroUsuario />} />
-    </Routes>
+    <UserContextProvider>
+      <Routes>
+
+        <Route path="/" element={<Navigate to={LOGIN_URL} />} />
+        <Route path={LOGIN_URL} element={<Login />} />
+
+        <Route path="/" element={<Navigate to={REGISTER_URL} />} />
+        <Route path={REGISTER_URL} element={<RegistroUsuario />} />
+
+        <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to={TRACKING_URL} />} />
+          <Route path={TRACKING_URL} element={<Tracking />} />
+        </Route>
+
+      </Routes>
+    </UserContextProvider>
+      
   </BrowserRouter>
 );
 

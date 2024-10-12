@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import styles from "./Register.module.css"; // Importa estilos con CSS Modules
+import { useNavigate } from "react-router-dom";
+import {registerWithEmailAndPassword} from "../../../firebase/auth-service"
+import { TRACKING_URL } from "../../constants/urls";
+import { toast } from 'react-toastify';
+import { insertData } from "../../../firebase/users-service";
 
-const RegistroUsuario = () => {
+export function RegistroUsuario()  {
+  const notifyError = (mensaje) => toast.error(mensaje);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nombres: '',
     apellidos: '',
@@ -38,10 +46,33 @@ const RegistroUsuario = () => {
     return Object.keys(newErrors).length === 0; // Retorna true si no hay errores
   };
 
-  const handleSubmit = (event) => {
+  const onSuccess = () => {
+    navigate(TRACKING_URL);
+};
+
+const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyError("REGISTER FAILED, Try Again");};
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (validate()) {
-      console.log("Formulario enviado:", formData);
+    try {
+      if (validate()) {
+        const result = await registerWithEmailAndPassword(formData.correo, formData.password);
+  
+        await insertData(formData);
+        alert("Registro exitoso");
+
+        onSuccess()
+  
+      } else {
+        console.log("Ocurrio un error desconocido");
+
+        onFail()
+      }
+      
+    } catch (error) {
+      console.error("Error al registrar los datos: ", error);
+      alert("Error al registrar los datos");
     }
   };
 
@@ -194,11 +225,9 @@ const RegistroUsuario = () => {
             </div>
           </div>
 
-          <button type="submit" className={styles.submitBtn}>Registrar</button>
+          <button type="submit" className={styles.submitBtn} onClick={handleSubmit}>Registrar</button>
         </form>
       </div>
     </div>
   );
-};
-
-export default RegistroUsuario;
+}
