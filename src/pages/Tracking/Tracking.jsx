@@ -4,6 +4,9 @@ import { es } from 'date-fns/locale';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import styles from './Tracking.module.css';
+import { auth} from '../../../firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { getUserSalaryByEmail } from '../../../firebase/users-service';
 
 export function Tracking() {
   const [time, setTime] = useState(0);
@@ -11,6 +14,29 @@ export function Tracking() {
   const [records, setRecords] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [filter, setFilter] = useState({ type: 'all', date: new Date() });
+  const [userEmail, setUserEmail] = useState('');
+  const [userSalary, setUserSalary] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUserEmail(user.email);
+        console.log("Correo del usuario:", user.email);
+        try {
+          const salary = await getUserSalaryByEmail(user.email);
+          setUserSalary(salary);
+        } catch (error) {
+          console.error("Error al obtener el sueldo del usuario:", error);
+        }
+      } else {
+        setUserEmail('');
+        setUserSalary(null);
+        console.log("No hay un usuario autenticado.");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     let intervalId;
@@ -19,11 +45,12 @@ export function Tracking() {
         setTime((prevTime) => prevTime + 0.1);
       }, 100);
     }
+
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [isRunning]);
-
+  
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
@@ -36,12 +63,16 @@ export function Tracking() {
       const duration = Number(((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1));
       setRecords((prevRecords) => [
         ...prevRecords,
+        
+        
         {
           id: prevRecords.length + 1,
           start: startTime,
           end: endTime,
           duration: duration
         }
+
+
       ]);
       setTime(0);
       setStartTime(null);
@@ -94,6 +125,8 @@ export function Tracking() {
   const filteredRecords = filterRecords(records, filter);
   const totalUses = records.length;
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
+  const hourlyRate = userSalary/3600 ;
+  const totalSalary = totalTime * hourlyRate;
 
   return (
     <div className={styles.container}>
@@ -137,6 +170,10 @@ export function Tracking() {
               <div>
                 <p>Tiempo Total Acumulado</p>
                 <p>{formatTime(totalTime)}</p>
+              </div>
+              <div>
+                <p>Salario acumulado</p>
+                <p>{totalSalary}</p>
               </div>
             </div>
           </div>

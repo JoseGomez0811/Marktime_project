@@ -64,3 +64,28 @@ export async function updateProfile(data, userId) {
     throw error; // Lanza el error para manejo posterior
   }
 }
+
+export async function getUserSalaryByEmail(correo) {
+  try {
+    // Crea una consulta para buscar el documento en la colección 'registro-empleados' donde el correo coincida
+    const userQuery = query(
+      collection(db, 'Registro-Empleados'),
+      where('Correo', '==', correo)
+    );
+
+    // Obtén los documentos que coinciden con la consulta
+    const results = await getDocs(userQuery);
+
+    // Si se encontraron resultados, devuelve el campo 'Sueldo' del primer documento encontrado
+    if (results.size > 0) {
+      const [userDoc] = results.docs;
+      return userDoc.data().Sueldo;
+    } else {
+      console.log("No se encontró ningún usuario con el correo proporcionado");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al obtener el sueldo del usuario: ", error);
+    throw error;
+  }
+}
