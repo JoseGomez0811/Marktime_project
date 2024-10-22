@@ -34,8 +34,6 @@ export function Login() {
 
   const onFail = (_error) => { console.log("LOGIN FAILED, Try Again") };
 
-    
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validate()) {

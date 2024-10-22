@@ -1,8 +1,9 @@
-import { doc, setDoc, updateDoc } from "firebase/firestore"; // Asegúrate de importar updateDoc
+import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "./config";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 const USERS_COLLECTION = "Registro-Empleados"; // Define la colección de usuarios
+const HOURS_COLLECTION = "Horas-Trabajadas"; //Coleccion de horas
 
 // Función para insertar datos en la colección de empleados
 export const insertData = async (formData) => {
@@ -63,4 +64,106 @@ export async function updateProfile(data, userId) {
     console.error("Error al actualizar el perfil del usuario: ", error);
     throw error; // Lanza el error para manejo posterior
   }
+}
+
+export async function getUserSalaryByEmail(correo) {
+  try {
+    // Crea una consulta para buscar el documento en la colección 'registro-empleados' donde el correo coincida
+    const userQuery = query(
+      collection(db, "Registro-Empleados"),
+      where("Correo", "==", correo)
+    );
+
+    // Obtén los documentos que coinciden con la consulta
+    const results = await getDocs(userQuery);
+
+    // Si se encontraron resultados, devuelve el campo 'Sueldo' del primer documento encontrado
+    if (results.size > 0) {
+      const [userDoc] = results.docs;
+      return userDoc.data().Sueldo;
+    } else {
+      console.log("No se encontró ningún usuario con el correo proporcionado");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al obtener el sueldo del usuario: ", error);
+    throw error;
+  }
+}
+
+// anadir records a la BDD
+export async function addTimeRecordToBDD(userEmail, startTime, endTime, horas) {
+  try {
+    const userQuery = query(
+      collection(db, USERS_COLLECTION),
+      where("Correo", "==", userEmail) // Usa "Correo" como el campo adecuado
+    );
+
+    // Obtén los documentos que coinciden con la consulta
+    const results = await getDocs(userQuery);
+
+    // Se encontró al menos un documento
+    if (!results.empty) {
+      results.forEach((doc) => {
+        const data = doc.data();
+        const cedula = data.Cédula;
+
+        addRecordByCedula(cedula, startTime, endTime, horas);
+      });
+    } else {
+      console.log("No se encontró ningún usuario con el correo proporcionado.");
+    }
+  } catch (error) {
+    console.error("Error en la funcion anadir time record");
+    throw error;
+  }
+}
+
+//pa no poner todo en la misma funcion
+async function addRecordByCedula(cedula, startTime, endTime, horas) {
+  try {
+    const userQuery = query(
+      collection(db, HOURS_COLLECTION),
+      where("ID", "==", cedula) // Usa la cedula
+    );
+
+    // Obtener los documentos que coinciden con la consulta
+    const results = await getDocs(userQuery);
+
+    if (!results.empty) {
+      results.forEach(async (document) => {
+        const data = document.data();
+        const docID = document.id;
+        const docRef = doc(db, HOURS_COLLECTION, docID);
+        const prevRecords = data["Registro de Horas"];
+        const newRecord = {
+          "fecha inicio": startTime,
+          "fecha fin": endTime,
+          horas: horas,
+        };
+        prevRecords.push(newRecord);
+        await updateDoc(docRef, {
+          "Registro de Horas": arrayUnion(newRecord),
+        });
+      });
+    } else {
+      await addDoc(collection(db, HOURS_COLLECTION), {
+        ID: cedula,
+        "Registro de Horas": [
+          {
+            "fecha inicio": startTime,
+            "fecha fin": endTime,
+            horas: horas,
+          },
+        ],
+      });
+      console.log("Creadinho");
+    }
+  } catch (error) {
+    console.error("Error añadiendo el registro de horas: ", error);
+  }
+}
+
+export async function getTimeRecordsByDay(userEmail) {
+  //Aqui necesitamos traer una lista de records por dia y los que coincidan en dia deberian estar en la monda de los registros
 }
