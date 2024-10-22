@@ -181,15 +181,15 @@ export function Tracking() {
           <div className={styles.statsCard}>
             <h2>Estadísticas</h2>
             <div className={styles.statsGrid}>
-              <div>
+              <div className={styles.statsCounter}>
                 <p>Número de Usos</p>
                 <p>{totalUses}</p>
               </div>
-              <div>
+              <div className={styles.statsTime}>
                 <p>Tiempo Total Acumulado</p>
                 <p>{formatTime(totalTime)}</p>
               </div>
-              <div>
+              <div className={styles.statsSalary}>
                 <p>Salario acumulado</p>
                 <p>{totalSalary}</p>
               </div>

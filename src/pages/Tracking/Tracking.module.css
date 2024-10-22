@@ -145,12 +145,12 @@ body {
   
   .statsGrid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     text-align: center;
     align-items: center;
     font-size: 1.30rem;
-    margin: 3rem;
+    margin: 1rem;
   }
   
   .recordsCard {
