@@ -16,7 +16,7 @@ export const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await logout(); // Llama la función logout de tu servicio
-      navigate({LOGIN_URL}); // Redirige al login después de cerrar sesión
+      navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
