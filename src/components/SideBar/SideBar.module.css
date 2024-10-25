@@ -3,7 +3,8 @@ aside {
   justify-content: center;      /* Centra horizontalmente */
   align-items: center;          /* Centra verticalmente */
   height: 100vh;                /* Asegura que el contenedor ocupe toda la altura de la pantalla */
-  width: 300px;                 /* Asegura que el contenedor ocupe todo el ancho de la pantalla */
+  min-width: 20%;  
+  max-width: 20%;               /* Asegura que el contenedor ocupe todo el ancho de la pantalla */
   background-color: #f8f9fa;    /* Color de fondo opcional */
 }
 
@@ -16,7 +17,8 @@ aside {
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border-radius: 15px;
-  width: 90%;
+  min-width: 90%;
+  max-width: 90%;
   height: 95%;   /* Centrar el contenido dentro de la sidebar */
   justify-content: center !important;  /* Centrar el contenido de la sidebar */
   align-items: center !important;      /* Centrar horizontalmente el contenido */
@@ -25,13 +27,13 @@ aside {
   .sidebarHeader {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
   }
   
   .companyLogo {
-    width: 50px; /* Aumenté el tamaño para mejor visibilidad */
-    height: 50px; /* Aumenté el tamaño para mejor visibilidad */
-    margin-right: 10px;
+    width: 80px; /* Aumenté el tamaño para mejor visibilidad */
+    height: 80px; /* Aumenté el tamaño para mejor visibilidad */
+    padding: 0;
+    margin: 0;
   }
   
   .companyName {
@@ -43,8 +45,8 @@ aside {
   .userInfo {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
-    margin-top: 30px;
+    margin-bottom: 20px;
+    margin-top: 15px;
   }
   
   .userAvatar {

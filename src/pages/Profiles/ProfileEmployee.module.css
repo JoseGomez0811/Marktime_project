@@ -33,7 +33,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    font-size: 1.5rem;
+    font-size: 20px;
     margin-top: 3rem;
   }
   
@@ -41,29 +41,30 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2px; 
   }
   
   .infoField label {
     color: #4CAF50;
     font-weight: bold;
-    flex: 1;
+    margin-left: 5rem;
+    width: 30%; 
+    text-align: left; 
+  }
+  
+  .infoField label[for="nombreBanco"] {
     margin-left: 5rem;
   }
-
-  label[for="nombreBanco"] {
-    margin-left: 8rem;
-    margin-right:-3rem;
-  }   
-
-  label[for="numeroCuenta"] {
-    margin-left: 8rem;
-    margin-right:-3rem;
-  } 
+  
+  .infoField label[for="numeroCuenta"] {
+    margin-left: 5rem;
+  }
   
   .inputContainer {
     display: flex;
     align-items: center;
-    flex: 2;
+    flex: 1;
+    margin-right: 2rem;
   }
   
   .input {
@@ -72,15 +73,14 @@
     border: 1px solid #e0e0e0;
     border-radius: 15px;
     background-color: #f5f5f5;
-    max-width: 42rem;
+    min-width: 18rem; /* Ancho mínimo para el campo de entrada */
   }
   
   .editButton {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    margin-left: 1.5rem;
+    margin-left: 0.5rem;
   }
   
   .editIcon {

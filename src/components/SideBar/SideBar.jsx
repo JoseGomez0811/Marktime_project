@@ -26,7 +26,7 @@ export const Sidebar = () => {
     <aside > {/* Usa la clase de estilo correcta */}
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <img src="/logo.svg" alt="Logo de la empresa" className={styles.companyLogo} />
+          <img src="../public/Marktime-logo-2.svg" alt="Logo de la empresa" className={styles.companyLogo} />
           <h1 className={styles.companyName}>Marktime</h1>
         </div>
 
