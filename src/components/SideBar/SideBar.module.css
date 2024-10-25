@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); /* Nueva fuente */
+
 aside {
   display: flex;               /* Usa flexbox para centrar el contenido */
   justify-content: center;      /* Centra horizontalmente */
@@ -8,8 +10,9 @@ aside {
   background-color: #f8f9fa;    /* Color de fondo opcional */
 }
 
-.sidebar {                /* Deja que la altura se ajuste al contenido */
-  background-color: #4F8C6F;   /* Color de fondo de la barra lateral */
+.sidebar {   
+  font-family: 'Roboto', sans-serif;             /* Deja que la altura se ajuste al contenido */
+  background-color: #2E6957;   /* Color de fondo de la barra lateral */
   border-right: 1px solid #e9ecef;
   display: flex;
   flex-direction: column;
@@ -39,7 +42,7 @@ aside {
   .companyName {
     font-size: 20px; /* Tamaño de fuente más grande para el nombre de la empresa */
     font-weight: bold;
-    color: #343a40; /* Color más oscuro para un contraste mejor */
+    color: #ffffff; /* Color más oscuro para un contraste mejor */
   }
   
   .userInfo {
@@ -59,7 +62,7 @@ aside {
   
   .userName {
     font-size: 18px; /* Tamaño de fuente más grande para el nombre del usuario */
-    color: #495057; /* Color más suave para el texto del nombre */
+    color: #ffffff; /* Color más suave para el texto del nombre */
     font-weight: 500; /* Peso de fuente más ligero para un diseño moderno */
   }
   
@@ -70,13 +73,16 @@ aside {
   .navItem {
     display: flex;
     align-items: center;
-    padding: 12px 15px; /* Aumenté el padding para un aspecto más espacioso */
-    color: #495057;
+    padding: 12px 15px;
+    color: #ffffff;
     text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
     border-radius: 5px;
     margin-bottom: 10px;
-    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+    transition: background-color 0.3s, transform 0.2s;
   }
+  
   
   .navItem:hover {
     background-color: #e9ecef; /* Color de fondo en hover más suave */
@@ -86,23 +92,27 @@ aside {
   .navItem svg {
     margin-right: 10px;
   }
-  
+
   .logoutButton {
     display: flex;
     align-items: center;
-    padding: 10px 15px; /* Aumenté el padding para un aspecto más espacioso */
-    background-color: #dc3545; /* Color de fondo rojo para el botón de logout */
+    padding: 10px 15px;
+    background-color: #b60b1c;
     color: white;
     border: none;
     border-radius: 5px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
-    width: 90%;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 150px;
   }
   
+  
   .logoutButton:hover {
-    background-color: #c82333; /* Color de fondo más oscuro en hover */
+    background-color: #6e0a14; /* Color de fondo más oscuro en hover */
     transform: scale(1.05); /* Efecto de escala en hover */
+  
   }
   
   .logoutButton svg {
