@@ -1,0 +1,106 @@
+.userProfile {
+    background-color: #E8EFEC;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 98%;
+    margin: 0 auto;
+  }
+  
+  .userHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .userAvatar {
+    width: 150px;
+    height: 150px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    margin-right: 15px;
+    margin-left: 25px;
+  }
+  
+  .userName {
+    color: #4CAF50;
+    font-size: 50px;
+    margin: 0;
+    margin-left: 3rem;
+  }
+  
+  .userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-size: 20px;
+    margin-top: 3rem;
+  }
+  
+  .infoField {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px; 
+  }
+  
+  .infoField label {
+    color: #4CAF50;
+    font-weight: bold;
+    margin-left: 5rem;
+    width: 30%; 
+    text-align: left; 
+  }
+  
+  .infoField label[for="nombreBanco"] {
+    margin-left: 5rem;
+  }
+  
+  .infoField label[for="numeroCuenta"] {
+    margin-left: 5rem;
+  }
+  
+  .inputContainer {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    margin-right: 2rem;
+  }
+  
+  .input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 15px;
+    background-color: #f5f5f5;
+    min-width: 18rem; /* Ancho mínimo para el campo de entrada */
+  }
+  
+  .editButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+  
+  .editIcon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #4CAF50;
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>');
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+  
+  @media (max-width: 600px) {
+    .infoField {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .inputContainer {
+      width: 100%;
+      margin-top: 5px;
+    }
+  }

@@ -1,8 +1,8 @@
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut, fetchSignInMethodsForEmail
-} from "firebase/auth";
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut, fetchSignInMethodsForEmail
+  } from "firebase/auth";
 import { auth } from "./config";
 
 
@@ -20,24 +20,24 @@ try {
 
 export const loginWithEmailAndPassword = async (email, password, onSuccess, onFail) => {
 
-try {
-  const result = await signInWithEmailAndPassword(auth, email, password);
-  console.log('EXITO', result);
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    console.log('EXITO', result);
 
-  if (onSuccess) {
-    alert('Inicio de sesión exitoso');
-    onSuccess();
-  }
-  return true;
+    if (onSuccess) {
+      alert('Inicio de sesión exitoso');
+      onSuccess();
+    }
+    return true;
 
-} catch (error) {
-  console.error("LOGIN FAILED", { error });
-  if (onFail) {
-    alert("Inicio de sesión fallido")
-    onFail(error);
+  } catch (error) {
+    console.error("LOGIN FAILED", { error });
+    if (onFail) {
+      alert("Inicio de sesión fallido")
+      onFail(error);
+    }
+    return false;
   }
-  return false;
-}
 
 };
 

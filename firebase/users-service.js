@@ -54,6 +54,20 @@ export async function getUserProfile(correo) {
   }
 }
 
+export async function getUser() {
+  const userQuery = query(
+    collection(db, USERS_COLLECTION)
+  );
+  const results = await getDocs(userQuery);
+  if (results.size > 0) {
+    const users = results.docs.map((item) => ({
+      ...item.data(),
+      id: item.id,
+    }));
+    return users;
+  }
+}
+
 // Función para actualizar los datos del usuario
 export async function updateProfile(data, userId) {
   try {

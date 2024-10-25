@@ -4,7 +4,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import { logout } from "../../../firebase/auth-service";
 import React from "react";
 import { LogOut, User, Users, UserPlus, Activity } from "lucide-react";
-import { TRACKING_URL, REGISTER_URL, LOGIN_URL } from "../../constants/urls";
+import { TRACKING_URL, REGISTER_URL, LOGIN_URL, PROFILE_URL, LIST_URL } from "../../constants/urls";
 
 export const Sidebar = () => {
   const { user } = useUserContext(); // Traemos el contexto de usuario
@@ -16,6 +16,7 @@ export const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await logout(); // Llama la función logout de tu servicio
+      navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
       navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
