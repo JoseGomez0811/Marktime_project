@@ -16,7 +16,7 @@ export const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await logout(); // Llama la función logout de tu servicio
-      navigate({LOGIN_URL}); // Redirige al login después de cerrar sesión
+      navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -25,8 +25,8 @@ export const Sidebar = () => {
   return (
     <aside className={styles.sidebar}> {/* Usa la clase de estilo correcta */}
       <div className={styles.sidebarHeader}>
-        <img src="/logo.svg" alt="Logo de la empresa" className={styles.companyLogo} />
-        <h1 className={styles.companyName}>Nombre Empresa</h1>
+        <img src="/Marktime-logo-2.svg" alt="Logo de la empresa" className={styles.companyLogo} />
+        <h1 className={styles.companyName}>Marktime</h1>
       </div>
 
       <div className={styles.userInfo}>

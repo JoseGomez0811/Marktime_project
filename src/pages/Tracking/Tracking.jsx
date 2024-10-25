@@ -77,7 +77,6 @@ export function Tracking() {
       );
       setRecords((prevRecords) => [
         ...prevRecords,
-
         {
           id: prevRecords.length + 1,
           start: startTime,
@@ -148,16 +147,12 @@ export function Tracking() {
       <div className={styles.innerContainer}>
         <header className={styles.header}>
           <h1>Sistema de Control de Tiempo</h1>
-          <p>
-            Gestione y registre el tiempo de sus actividades de manera
-            eficiente.
-          </p>
         </header>
 
         <div className={styles.grid}>
           <div className={styles.timerCard}>
-            <h2>Contador</h2>
             <div className="text-center">
+              <h2 className={styles.timerTitle}>Contador</h2>
               <div className={styles.timer}>{formatTime(time)}</div>
               <div className={styles.buttonGroup}>
                 <button
@@ -179,19 +174,17 @@ export function Tracking() {
           </div>
 
           <div className={styles.statsCard}>
-            <h2>Estadísticas</h2>
-            <div className={styles.statsGrid}>
-              <div>
-                <p>Número de Usos</p>
-                <p>{totalUses}</p>
-              </div>
-              <div>
+            <div className={styles.statsTitleWrapper}>
+              <h2 className={styles.statsTitle}>Estadísticas</h2>
+            </div>
+            <div className={styles.statsRow}>
+              <div className={styles.statItem}>
                 <p>Tiempo Total Acumulado</p>
                 <p>{formatTime(totalTime)}</p>
               </div>
-              <div>
+              <div className={styles.statItem}>
                 <p>Salario acumulado</p>
-                <p>{totalSalary}</p>
+                <p>{totalSalary.toFixed(1)}$</p>
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@
     flex-direction: column;
     height: 100vh;
     background-color: #f4f4f4;
+    color: black;
   }
   
   .title {
@@ -38,7 +39,7 @@
   }
   
   input {
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
@@ -61,14 +62,14 @@
     font-size: 1rem;
     width: 100%; /* Ocupa el 100% del ancho del contenedor */
     max-width: 120px; /* Puedes ajustar este valor para limitar el tamaño máximo del botón */
-  }
-  
-  .submitBtn:hover {
-    background-color: #0056b3;
-  }
-  
-  .error {
-    color: red;
-    font-size: 0.9rem;
-  }
-  
+  } 
+    
+  .registerLink {
+    font-size: 1rem; 
+    color: #007bff; 
+    text-decoration: none; 
+}
+
+.registerLink:hover {
+    text-decoration: underline; /* Subrayar al pasar el mouse, opcional */
+}

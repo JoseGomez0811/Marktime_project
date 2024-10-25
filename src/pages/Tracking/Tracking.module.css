@@ -1,198 +1,287 @@
-/* Estilos personalizados para el Tracking */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap'); /* Nueva fuente */
 
-/* Estilo para el botón deshabilitado (aplicable a nivel global) */
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-  /* Estilos para el DatePicker (aplicable a nivel global) */
-  .react-datepicker-wrapper {
-    width: 100%;
-  }
-  
-  .react-datepicker__input-container input {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.375rem;
-    border: 1px solid #d1d5db;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-  
-  .react-datepicker__input-container input:focus {
-    outline: none;
-    ring: 2px;
-    ring-color: #3b82f6;
-    border-color: #3b82f6;
-  }
-  
-  /* Estilo para hacer la tabla responsive en dispositivos móviles (aplicable a nivel global) */
-  @media (max-width: 640px) {
-    .overflow-x-auto {
-      -webkit-overflow-scrolling: touch;
-    }
-  
-    table {
-      display: block;
-      width: 100%;
-      overflow-x: auto;
-    }
-  }
-  
-  /* Animación suave para el cambio de tiempo en el contador */
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  :root {
-    --primary-color: #3b82f6; /* Azul */
-    --primary-dark: #2563eb;  /* Azul oscuro */
-    --danger-color: #ef4444;  /* Rojo */
-    --background-color: #f7fafc; /* Fondo suave */
-    --card-background: #ffffff; /* Fondo de tarjetas */
-    --border-color: #e2e8f0; /* Color de borde suave */
-    --text-primary: #1f2937; /* Texto principal */
-    --text-secondary: #4b5563; /* Texto secundario */
-    --transition-speed: 0.3s; /* Velocidad de transición */
-    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+/* Estilo global de la fuente */
+body {
+  font-family: 'Poppins'; /* Aplicación de la nueva fuente */
+  color: var(--text-primary);
+  line-height: 1.6;
+  background-color: var(--background-color);
+  font-size: 0.875rem; /* Tamaño de fuente global reducido */
+  color: #2E6957;
 }
 
-/* Reseteo y estilos base */
+/* Botón deshabilitado */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos para el DatePicker */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: #1f2937;
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* Tabla responsive en móviles */
+@media (max-width: 640px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Animación para el contador */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+:root {
+  --primary-color: #2E6957;
+  --primary-dark: #2563eb;
+  --danger-color: #b60b1c;
+  --background-color: #f7fafc;
+  --card-background: #ffffff;
+  --border-color: #e2e8f0;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --transition-speed: 0.3s;
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset y estilos base */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: var(--text-primary);
-    line-height: 1.6; /* Espaciado de líneas más generoso */
-    background-color: var(--background-color); /* Fondo de la página */
+.timer {
+  font-size: 2.5rem; /* Tamaño reducido */
+  font-weight: 700; /* Fuente más gruesa */
+  color: var(--primary-color);
+  animation: pulse 2s infinite;
+  text-align: center;
 }
-  
-  /* Estilo específico para la clase del contador (CSS modularizado) */
-  .timer {
-    font-size: 4rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    animation: pulse 2s infinite;
-    text-align: center;
-  }
-  
-  /* CSS modularizado adicional */
-  .container {
-    min-height: 100vh;
-    background-color: #f7fafc;
-    padding: 1rem;
-  }
-  
-  .innerContainer {
-    max-width: 80rem;
-    margin: 0 auto;
-  }
-  
-  .header h1 {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  .grid {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-  
-  .timerCard, .statsCard, .recordsCard {
-    background-color: var(--card-background);
-    box-shadow: var(--box-shadow);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    transition: transform var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out; /* Transición suave */
-    height: 100%; /* Asegura que las tarjetas tengan la misma altura */
-    margin-bottom: 1.5rem; /* Espacio adicional entre tarjetas */
 
-  }
-  
-  .buttonGroup {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-  
-  .startButton {
-    background-color: #3b82f6;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: bold;
-  }
-  
-  .stopButton {
-    background-color: #ef4444;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: bold;
-  }
-  
-  .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    text-align: center;
-    align-items: center;
-    font-size: 1.30rem;
-    margin: 3rem;
-  }
-  
-  .recordsCard {
-    margin-top: 2rem;
-  }
-  
-  .recordsHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1rem;
-  }
-  
-  .filterGroup {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .filterSelect, .datePicker {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table th, .table td {
-    padding: 1rem;
-    text-align: left;
-  }
-  
-  .table th {
-    background-color: #f9fafb;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-  
-  .table td {
-    background-color: white;
-  }
-  
+.container {
+  min-height: 100vh;
+  background-color: #f7fafc;
+  padding: 1rem;
+}
+
+.innerContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.header h1 {
+  font-size: 2rem; /* Tamaño ajustado */
+  font-weight: 700; /* Fuente más gruesa */
+}
+
+.grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.timerCard, .statsCard, .recordsCard {
+  background-color: var(--card-background);
+  box-shadow: var(--box-shadow);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: transform var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out;
+  height: 100%;
+  margin-bottom: 1.5rem;
+  font-weight: 500; /* Fuente más consistente */
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.startButton {
+  background-color: #2E6957;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+
+.stopButton {
+  background-color: #b60b1c;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+
+.recordsCard {
+  margin-top: 2rem;
+}
+
+.recordsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem;
+  color: #2E6957;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.5rem;
+  transform: translateX(14px); /* Ajusta el valor según lo necesites */
+}
+
+.filterSelect, .datePicker {
+  padding: 0.5rem;
+  border: 1.2px solid #000000;
+  border-radius: 0.375rem;
+  background-color: #2E6957;
+  color: white;
+}
+
+/* Estilos para la tabla */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #2E6957; /* Color del texto por defecto */
+  border-radius: 0.5rem; /* Bordes redondeados para toda la tabla */
+  overflow: hidden; /* Asegurar que el contenido también esté dentro de los bordes */
+}
+
+.table th, .table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+/* Estilo solo para el encabezado */
+.table thead th {
+  background-color: #2E6957; /* Fondo verde solo para el encabezado */
+  color: white; /* Color blanco para el texto del encabezado */
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.table tbody td {
+  font-size: 0.875rem; /* Tamaño de letra del cuerpo de la tabla */
+  background-color: white; /* Fondo blanco para las filas */
+  color: #2E6957; /* Color del texto del cuerpo de la tabla */
+}
+
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2E6957;
+}
+
+.statItem {
+  flex: 1;
+  margin: 0 10px;
+  font-size: 18px;
+  text-align: center; /* Centra el texto de cada estadística */
+  margin-bottom: 10px; /* Añade espacio entre los dos elementos */
+}
+
+.header {
+  text-align: center; /* Centramos el texto del header */
+}
+
+.timerCard h2,
+.statsCard h2,
+.recordsCard h2 {
+  text-align: center; /* Centramos los títulos de cada caja */
+}
+
+.recordsCard {
+  text-align: center; /* Centramos también el contenido de esta sección */
+}
+
+.timerCard h2{
+  padding: 0px; /* Ajustar el espacio entre el título y el contenido */
+  font-size: 25px;
+}
+
+.statItemCentered {
+  text-align: center; /* Asegura que el texto esté centrado */
+  margin-bottom: 10px; /* Espacio entre los elementos */
+}
+
+.statsCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alinea el contenido hacia la parte superior */
+  align-items: center;
+  padding: 1rem 1.5rem; /* Ajusta el padding para subir el contenido */
+  height: 100%;
+  box-shadow: var(--box-shadow);
+  gap: 0.5rem; /* Reduce el espacio entre los elementos */
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  text-align: center;
+  font-size: 1.15rem;
+  margin: 0; /* Quitar márgenes para subir el contenido */
+  align-items: start; /* Asegura que el contenido se alinee hacia arriba */
+}
+
+.statsCard h2 {
+  padding: 0 ; /* Ajustar el espacio entre el título y el contenido */
+  font-size: 25px;
+}
+
+.statsTitleWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center; /* Align vertically */
+  justify-content: center; /* Align horizontally */
+  height: 100%;
+}
+
+.statsTitle {
+  margin: 0;
+  padding: 0;
+  color: #2E6957;
+}
+
+.timerTitle {
+  margin: 0;
+  padding: 0;
+  color: #2E6957;
+}
+
+
+

@@ -93,10 +93,9 @@ export function Login() {
           </div>
         </form>
         <div className={styles.registerLinkContainer}>
-          <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
-        </div>
+  <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
+      </div>
       </div>
     </div>
   );
 }
-
