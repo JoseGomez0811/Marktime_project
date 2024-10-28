@@ -23,7 +23,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside > {/* Usa la clase de estilo correcta */}
+    <aside >
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <img src="../public/Marktime-logo-2.svg" alt="Logo de la empresa" className={styles.companyLogo} />
@@ -46,7 +46,7 @@ export const Sidebar = () => {
           {user?.Cargo === 'Empleado' && (
             <Link to={TRACKING_URL} className={styles.navItem}>
               <Activity size={20} />
-              <span>Tracking</span>
+              <span>Registro Horas</span>
             </Link>
           )}
 

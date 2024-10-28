@@ -7,19 +7,18 @@ aside {
   height: 100vh;                /* Asegura que el contenedor ocupe toda la altura de la pantalla */
   min-width: 20%;  
   max-width: 20%;               /* Asegura que el contenedor ocupe todo el ancho de la pantalla */
-  background-color: #f8f9fa;    /* Color de fondo opcional */
 }
 
 .sidebar {   
   font-family: 'Roboto', sans-serif;             /* Deja que la altura se ajuste al contenido */
-  background-color: #2E6957;   /* Color de fondo de la barra lateral */
-  border-right: 1px solid #e9ecef;
+  background-color: #1D1D1D;   /* Color de fondo de la barra lateral */
+  border-right: 1px solid #1D1D1D;
   display: flex;
   flex-direction: column;
   padding: 20px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  border-radius: 15px;
+  border-radius: 10px;
   min-width: 90%;
   max-width: 90%;
   height: 95%;   /* Centrar el contenido dentro de la sidebar */
@@ -50,6 +49,7 @@ aside {
     align-items: center;
     margin-bottom: 20px;
     margin-top: 15px;
+    width: 90%;
   }
   
   .userAvatar {
@@ -78,14 +78,15 @@ aside {
     text-decoration: none;
     font-size: 16px;
     font-weight: 500;
-    border-radius: 5px;
+    border-radius: 10px;
     margin-bottom: 10px;
     transition: background-color 0.3s, transform 0.2s;
+    width: 190px;
   }
   
   
   .navItem:hover {
-    background-color: #e9ecef; /* Color de fondo en hover más suave */
+    background-color: #4F8C6F; /* Color de fondo en hover más suave */
     transform: scale(1.02); /* Efecto de escala en hover */
   }
   
@@ -97,20 +98,20 @@ aside {
     display: flex;
     align-items: center;
     padding: 10px 15px;
-    background-color: #b60b1c;
+    background-color: #1D1D1D;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     font-weight: 500;
     letter-spacing: 0.5px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    width: 150px;
+    width: 90%;
   }
   
   
   .logoutButton:hover {
-    background-color: #6e0a14; /* Color de fondo más oscuro en hover */
+    background-color: #8C564F; /* Color de fondo más oscuro en hover */
     transform: scale(1.05); /* Efecto de escala en hover */
   
   }

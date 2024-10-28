@@ -3,11 +3,9 @@
 /* Estilo global de la fuente */
 body {
   font-family: 'Poppins'; /* Aplicación de la nueva fuente */
-  color: var(--text-primary);
   line-height: 1.6;
-  background-color: var(--background-color);
   font-size: 0.875rem; /* Tamaño de fuente global reducido */
-  color: #2E6957;
+  color: #ffffff;
 }
 
 /* Botón deshabilitado */
@@ -60,13 +58,13 @@ button:disabled {
   --primary-color: #2E6957;
   --primary-dark: #2563eb;
   --danger-color: #b60b1c;
-  --background-color: #f7fafc;
+  --background-color: #1D1D1D;
   --card-background: #ffffff;
   --border-color: #e2e8f0;
   --text-primary: #1f2937;
   --text-secondary: #4b5563;
   --transition-speed: 0.3s;
-  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Reset y estilos base */
@@ -77,21 +75,22 @@ button:disabled {
 }
 
 header {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .timer {
   font-size: 2.5rem; /* Tamaño reducido */
-  font-weight: 700; /* Fuente más gruesa */
-  color: var(--primary-color);
+  font-weight: 500; /* Fuente más gruesa */
+  color: #ffffff;
   animation: pulse 2s infinite;
   text-align: center;
+  margin: 30px 0;
 }
 
 .container {
   min-height: 100vh;
-  background-color: #f7fafc;
-  padding: 1rem;
+  background-color: #1D1D1D;
+
 }
 
 .innerContainer {
@@ -110,11 +109,16 @@ header {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
+h2{
+  color: #ffffff;
+  text-align: left !important;
+}
+
 .timerCard, .statsCard, .recordsCard {
-  background-color: var(--card-background);
+  background-color: #2C2C2C;
   box-shadow: var(--box-shadow);
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1rem;
   transition: transform var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out;
   height: 100%;
   margin-bottom: 1.5rem;
@@ -133,14 +137,16 @@ header {
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
+  border: #4F8C6F;
 }
 
 .stopButton {
-  background-color: #b60b1c;
+  background-color: #8C564F;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
+  border: #8C564F;
 }
 
 .recordsCard {
@@ -163,7 +169,7 @@ header {
 
 .filterSelect, .datePicker {
   padding: 0.5rem;
-  border: 1.2px solid #000000;
+  border: #2E6957;
   border-radius: 0.375rem;
   background-color: #2E6957;
   color: white;
@@ -211,16 +217,13 @@ header {
   font-size: 18px;
   text-align: center; /* Centra el texto de cada estadística */
   margin-bottom: 10px; /* Añade espacio entre los dos elementos */
+  padding-top: 35px;
+  color: #ffffff;
 }
 
 .header {
-  text-align: center; /* Centramos el texto del header */
-}
-
-.timerCard h2,
-.statsCard h2,
-.recordsCard h2 {
-  text-align: center; /* Centramos los títulos de cada caja */
+  text-align: left;
+  color: #2E6957;
 }
 
 .recordsCard {
@@ -230,11 +233,6 @@ header {
 .timerCard h2{
   padding: 0px; /* Ajustar el espacio entre el título y el contenido */
   font-size: 25px;
-}
-
-.statItemCentered {
-  text-align: center; /* Asegura que el texto esté centrado */
-  margin-bottom: 10px; /* Espacio entre los elementos */
 }
 
 .statsCard {
@@ -250,12 +248,12 @@ header {
 
 .statsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  text-align: center;
-  font-size: 1.15rem;
-  margin: 0; /* Quitar márgenes para subir el contenido */
-  align-items: start; /* Asegura que el contenido se alinee hacia arriba */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+    align-items: center;
+    font-size: 1.30rem;
+    margin: 1rem;
 }
 
 .statsCard h2 {
@@ -263,25 +261,23 @@ header {
   font-size: 25px;
 }
 
-.statsTitleWrapper {
-  flex: 1;
-  display: flex;
-  align-items: center; /* Align vertically */
-  justify-content: center; /* Align horizontally */
-  height: 100%;
-}
 
 .statsTitle {
-  margin: 0;
-  padding: 0;
-  color: #2E6957;
+  margin: 7px;
+  color: #ffffff;
 }
 
 .timerTitle {
-  margin: 0;
   padding: 0;
-  color: #2E6957;
+  color: #ffffff;
 }
+
+.statsTitleWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
 
 
 
