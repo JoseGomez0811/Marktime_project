@@ -23,10 +23,10 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside > {/* Usa la clase de estilo correcta */}
+    <aside >
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <img src="../public/Marktime-logo-2.svg" alt="Logo de la empresa" className={styles.companyLogo} />
+          <img src="../public/download.svg" alt="Logo de la empresa" className={styles.companyLogo}/>
           <h1 className={styles.companyName}>Marktime</h1>
         </div>
 
@@ -38,35 +38,35 @@ export const Sidebar = () => {
 
         <nav className={styles.sidebarNav}>
           <Link to={PROFILE_URL} className={styles.navItem}>
-            <User size={20} />
+            <User size={20} className={styles.userIcon}/>
             <span>Perfil</span>
           </Link>
 
           {/* Renderiza según el tipo de usuario */}
           {user?.Cargo === 'Empleado' && (
             <Link to={TRACKING_URL} className={styles.navItem}>
-              <Activity size={20} />
-              <span>Tracking</span>
+              <Activity size={20} className={styles.activityIcon}/>
+              <span>Registro Horas</span>
             </Link>
           )}
 
           {(user?.Cargo === 'Empleador' || user?.Cargo === 'Recursos Humanos') && (
             <Link to={LIST_URL} className={styles.navItem}>
-              <Users size={20} />
+              <Users size={20} className={styles.usersIcon}/>
               <span>Listado de Empleados</span>
             </Link>
           )}
 
           {user?.Cargo === 'Recursos Humanos' && (
             <Link to={REGISTER_URL} className={styles.navItem}>
-              <UserPlus size={20} />
+              <UserPlus size={20} className={styles.userplusIcon}/>
               <span>Registrar Empleado</span>
             </Link>
           )}
         </nav>
 
         <button onClick={handleLogout} className={styles.logoutButton}>
-          <LogOut size={20} />
+          <LogOut size={20} className={styles.logoutIcon} />
           <span>Cerrar Sesión</span>
         </button>
       </div>

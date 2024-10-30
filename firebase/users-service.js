@@ -181,3 +181,40 @@ async function addRecordByCedula(cedula, startTime, endTime, horas) {
 export async function getTimeRecordsByDay(userEmail) {
   //Aqui necesitamos traer una lista de records por dia y los que coincidan en dia deberian estar en la monda de los registros
 }
+
+export const getHoursRecords = async (cedula) => {
+  try {
+    const hoursCollection = collection(db, HOURS_COLLECTION);
+    const q = query(hoursCollection, where('ID', '==', cedula));
+    const querySnapshot = await getDocs(q);
+    
+    let hoursRecords = [];
+    
+    querySnapshot.forEach((doc) => {
+      const registroHoras = doc.data()["Registro de Horas"] || [];
+      
+      const formattedRecords = registroHoras.map((record, index) => {
+        // Convertir los timestamps de Firestore a objetos Date
+        const startTime = record["fecha inicio"]?.toDate?.() || new Date(record["fecha inicio"]);
+        const endTime = record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
+        
+        return {
+          id: index + 1,
+          startTime,
+          endTime,
+          horas: record.horas
+        };
+      });
+      
+      hoursRecords = [...hoursRecords, ...formattedRecords];
+    });
+    
+    return hoursRecords;
+  } catch (error) {
+    console.error("Error al obtener los registros de horas:", error);
+    throw error;
+  }
+};
+
+
+
