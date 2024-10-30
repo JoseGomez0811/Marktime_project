@@ -176,11 +176,13 @@ header {
   color: #2E6957; /* Color del texto por defecto */
   border-radius: 0.5rem; /* Bordes redondeados para toda la tabla */
   overflow: hidden; /* Asegurar que el contenido también esté dentro de los bordes */
+  border-color: #000000;
 }
 
 .table th, .table td {
   padding: 1rem;
   text-align: left;
+  border-color: black;
 }
 
 /* Estilo solo para el encabezado */
@@ -190,12 +192,14 @@ header {
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
+  border-color: #000000;
 }
 
 .table tbody td {
   font-size: 0.875rem; /* Tamaño de letra del cuerpo de la tabla */
   background-color: white; /* Fondo blanco para las filas */
   color: #2E6957; /* Color del texto del cuerpo de la tabla */
+  border-color: #000000;
 }
 
 .statsRow {
@@ -281,6 +285,7 @@ header {
   margin: 0;
   padding: 0;
   color: #2E6957;
+
 }
 
 

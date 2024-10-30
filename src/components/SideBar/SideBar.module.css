@@ -83,11 +83,11 @@ aside {
     transition: background-color 0.3s, transform 0.2s;
   }
   
-  
   .navItem:hover {
-    background-color: #e9ecef; /* Color de fondo en hover más suave */
-    transform: scale(1.02); /* Efecto de escala en hover */
+    background-color: #0f3e2f;
+    transform: scale(1.02);
   }
+  
   
   .navItem svg {
     margin-right: 10px;
