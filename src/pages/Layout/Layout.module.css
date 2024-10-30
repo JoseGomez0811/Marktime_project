@@ -2,14 +2,14 @@
 .container {
     display: flex; /* Usamos flexbox para organizar el sidebar y el contenido en línea */
     height: 100vh;
-    background-color: #1D1D1D; /* Ocupa toda la altura de la ventana */ 
+    background: linear-gradient(to bottom,#0A1626, #1D1D1D); /* Ocupa toda la altura de la ventana */ 
   }
   
   .sidebar {
     min-width: 25% !important; /* Ancho fijo para el sidebar */
     max-width: 25% !important;
     height: 100vh; /* Altura del sidebar igual a la altura de la ventana */
-    background-color: #1D1D1D; /* Color de fondo del sidebar */
+    background: linear-gradient(to bottom,#0A1626, #1D1D1D); /* Color de fondo del sidebar */
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -19,7 +19,7 @@
   .outletContainer {
     flex-grow: 1; /* Permite que el contenedor del Outlet ocupe el espacio restante */
     padding: 20px; /* Espaciado interno para el contenido */
-    background-color: #1D1D1D; /* Color de fondo para el contenido */
+    background: linear-gradient(to bottom,#0A1626, #1D1D1D); /* Color de fondo para el contenido */
     overflow-y: auto; /* Permite el desplazamiento vertical si el contenido es grande */
     height: 100vh; /* Ocupa toda la altura de la ventana */ 
   }

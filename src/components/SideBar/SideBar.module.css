@@ -81,12 +81,12 @@ aside {
     border-radius: 10px;
     margin-bottom: 10px;
     transition: background-color 0.3s, transform 0.2s;
-    width: 190px;
+    width: 90%;
   }
   
   
   .navItem:hover {
-    background-color: #4F8C6F; /* Color de fondo en hover más suave */
+    background-color: #203359; /* Color de fondo en hover más suave */
     transform: scale(1.02); /* Efecto de escala en hover */
   }
   
@@ -119,4 +119,8 @@ aside {
   .logoutButton svg {
     margin-right: 10px;
   }
+
+.logoutIcon, .userIcon, .usersIcon, .activityIcon, .userplusIcon{ 
+  color:#60BF78;
+}
   
