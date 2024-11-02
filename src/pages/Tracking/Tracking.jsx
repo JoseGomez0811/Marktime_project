@@ -19,7 +19,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
-  getHoursRecords
+  getHoursRecords,
 } from "../../../firebase/users-service";
 
 export function Tracking() {
@@ -32,6 +32,7 @@ export function Tracking() {
   const [userSalary, setUserSalary] = useState(null);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
   const { user } = useUserContext();
 
   // Firebase auth effect
@@ -74,10 +75,12 @@ export function Tracking() {
         try {
           setIsLoading(true);
           const records = await getHoursRecords(user.Cédula);
-          const validRecords = records.filter(record => {
-            const hasValidStartTime = record.startTime && !isNaN(new Date(record.startTime));
-            const hasValidEndTime = record.endTime && !isNaN(new Date(record.endTime));
-            const hasValidHoras = typeof record.horas === 'number';
+          const validRecords = records.filter((record) => {
+            const hasValidStartTime =
+              record.startTime && !isNaN(new Date(record.startTime));
+            const hasValidEndTime =
+              record.endTime && !isNaN(new Date(record.endTime));
+            const hasValidHoras = typeof record.horas === "number";
             return hasValidStartTime && hasValidEndTime && hasValidHoras;
           });
           setHourRecords(validRecords);
@@ -102,6 +105,7 @@ export function Tracking() {
   };
 
   const handleStop = () => {
+    setShowConfirm(true);
     if (startTime) {
       setIsRunning(false);
       const endTime = new Date();
@@ -134,36 +138,36 @@ export function Tracking() {
 
   const formatDate = (date) => {
     try {
-      if (!date) return 'Fecha no disponible';
-      
+      if (!date) return "Fecha no disponible";
+
       if (date?.toDate) {
         date = date.toDate();
       }
-      
-      if (typeof date === 'string') {
+
+      if (typeof date === "string") {
         date = new Date(date);
       }
-      
+
       if (date instanceof Date && !isNaN(date)) {
         return format(date, "dd/MM/yyyy HH:mm:ss", { locale: es });
       }
-      
-      return 'Fecha inválida';
+
+      return "Fecha inválida";
     } catch (error) {
-      console.error('Error al formatear fecha:', error);
-      return 'Error en fecha';
+      console.error("Error al formatear fecha:", error);
+      return "Error en fecha";
     }
   };
 
   const filterRecords = (records) => {
     if (!records || records.length === 0) return [];
-    
+
     const getDateFromTimestamp = (timestamp) => {
       if (!timestamp) return null;
       if (timestamp?.toDate) {
         return timestamp.toDate();
       }
-      if (typeof timestamp === 'string') {
+      if (typeof timestamp === "string") {
         return new Date(timestamp);
       }
       if (timestamp instanceof Date) {
@@ -172,7 +176,7 @@ export function Tracking() {
       return null;
     };
 
-    return records.filter(record => {
+    return records.filter((record) => {
       const recordStart = getDateFromTimestamp(record.startTime);
       if (!recordStart) return false;
 
@@ -188,17 +192,26 @@ export function Tracking() {
         case "week": {
           const weekStart = startOfWeek(filter.date, { weekStartsOn: 1 });
           const weekEnd = endOfWeek(filter.date, { weekStartsOn: 1 });
-          return isWithinInterval(recordStart, { start: weekStart, end: weekEnd });
+          return isWithinInterval(recordStart, {
+            start: weekStart,
+            end: weekEnd,
+          });
         }
         case "month": {
           const monthStart = startOfMonth(filter.date);
           const monthEnd = endOfMonth(filter.date);
-          return isWithinInterval(recordStart, { start: monthStart, end: monthEnd });
+          return isWithinInterval(recordStart, {
+            start: monthStart,
+            end: monthEnd,
+          });
         }
         case "year": {
           const yearStart = startOfYear(filter.date);
           const yearEnd = endOfYear(filter.date);
-          return isWithinInterval(recordStart, { start: yearStart, end: yearEnd });
+          return isWithinInterval(recordStart, {
+            start: yearStart,
+            end: yearEnd,
+          });
         }
         default:
           return true;
@@ -241,6 +254,15 @@ export function Tracking() {
                 </button>
               </div>
             </div>
+
+            {showConfirm && (
+              <div className={styles.confirmBox}>
+                {" "}
+                <p>¿Está seguro que quiere parar el reloj?</p>{" "}
+                <button onClick={handleConfirmStop}>Sí</button>{" "}
+                <button onClick={handleCancel}>No</button>{" "}
+              </div>
+            )}
           </div>
 
           <div className={styles.statsCard}>
@@ -267,7 +289,9 @@ export function Tracking() {
               <select
                 className={styles.filterSelect}
                 value={filter.type}
-                onChange={(e) => setFilter((prev) => ({ ...prev, type: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((prev) => ({ ...prev, type: e.target.value }))
+                }
               >
                 <option value="all">Todos los registros</option>
                 <option value="day">Por día</option>
@@ -278,7 +302,9 @@ export function Tracking() {
               {filter.type !== "all" && (
                 <DatePicker
                   selected={filter.date}
-                  onChange={(date) => date && setFilter((prev) => ({ ...prev, date }))}
+                  onChange={(date) =>
+                    date && setFilter((prev) => ({ ...prev, date }))
+                  }
                   dateFormat="dd/MM/yyyy"
                   className={styles.datePicker}
                   locale={es}
@@ -299,7 +325,9 @@ export function Tracking() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan="4" className="text-center">Cargando registros...</td>
+                    <td colSpan="4" className="text-center">
+                      Cargando registros...
+                    </td>
                   </tr>
                 ) : filteredHourRecords.length > 0 ? (
                   filteredHourRecords.map((record, index) => (
@@ -307,7 +335,11 @@ export function Tracking() {
                       <td>{record.id || index + 1}</td>
                       <td>{formatDate(record.startTime)}</td>
                       <td>{formatDate(record.endTime)}</td>
-                      <td>{typeof record.horas === 'number' ? formatTime(record.horas) : 'N/A'}</td>
+                      <td>
+                        {typeof record.horas === "number"
+                          ? formatTime(record.horas)
+                          : "N/A"}
+                      </td>
                     </tr>
                   ))
                 ) : (

@@ -55,9 +55,7 @@ export async function getUserProfile(correo) {
 }
 
 export async function getUser() {
-  const userQuery = query(
-    collection(db, USERS_COLLECTION)
-  );
+  const userQuery = query(collection(db, USERS_COLLECTION));
   const results = await getDocs(userQuery);
   if (results.size > 0) {
     const users = results.docs.map((item) => ({
@@ -178,43 +176,77 @@ async function addRecordByCedula(cedula, startTime, endTime, horas) {
   }
 }
 
-export async function getTimeRecordsByDay(userEmail) {
-  //Aqui necesitamos traer una lista de records por dia y los que coincidan en dia deberian estar en la monda de los registros
+//WIP, NOT IMPLEMENTED
+export async function getTimeRecordsByDay(today, userEmail) {
+  const startOfDay = new Date(day);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(day);
+  endOfDay.setHours(23, 59, 59, 9999);
+
+  try {
+    const userQuery = query(
+      collection(db, USERS_COLLECTION),
+      where("Correo", "==", userEmail) // Usa "Correo" como el campo adecuado
+    );
+
+    if (!results.empty) {
+      results.forEach((doc) => {
+        const data = doc.data();
+        const cedula = data.Cédula;
+      });
+
+      const recordsQuery = query(
+        collection(db, "Horas-Trabajadas"),
+        where(
+          where("fecha inicio", ">=", Timestamp.fromDate(startOfDay)),
+          where("fecha inicio", "<=", Timestamp.fromDate),
+          where("Cédula" == cedula)
+        )
+      );
+    } else {
+      console.log(
+        "No se encontró ningún usuario con el correo proporcionado para buscar la tabla de registros de horas"
+      );
+    }
+  } catch {
+    console.log("error en la funcion de traer tabla de registros de horas");
+  }
 }
 
 export const getHoursRecords = async (cedula) => {
   try {
     const hoursCollection = collection(db, HOURS_COLLECTION);
-    const q = query(hoursCollection, where('ID', '==', cedula));
+    const q = query(hoursCollection, where("ID", "==", cedula));
     const querySnapshot = await getDocs(q);
-    
+
     let hoursRecords = [];
-    
+
     querySnapshot.forEach((doc) => {
       const registroHoras = doc.data()["Registro de Horas"] || [];
-      
+
       const formattedRecords = registroHoras.map((record, index) => {
         // Convertir los timestamps de Firestore a objetos Date
-        const startTime = record["fecha inicio"]?.toDate?.() || new Date(record["fecha inicio"]);
-        const endTime = record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
-        
+        const startTime =
+          record["fecha inicio"]?.toDate?.() ||
+          new Date(record["fecha inicio"]);
+        const endTime =
+          record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
+
         return {
           id: index + 1,
           startTime,
           endTime,
-          horas: record.horas
+          horas: record.horas,
         };
       });
-      
+
       hoursRecords = [...hoursRecords, ...formattedRecords];
     });
-    
+
     return hoursRecords;
   } catch (error) {
     console.error("Error al obtener los registros de horas:", error);
     throw error;
   }
 };
-
-
-
