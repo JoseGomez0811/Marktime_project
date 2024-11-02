@@ -132,22 +132,21 @@ h2{
 }
 
 .startButton {
-  background-color: #418552;
+  background-color: #2E6957;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
-  border: #418552;
 }
 
 .stopButton {
-  background-color: #8C564F;
+  background-color: #b60b1c;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
-  border: #8C564F;
 }
+
 
 .recordsCard {
   margin-top: 2rem;

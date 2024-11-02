@@ -1,9 +1,8 @@
-import { arrayUnion, doc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, setDoc, updateDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
 import { db } from "./config";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 const USERS_COLLECTION = "Registro-Empleados"; // Define la colección de usuarios
-const HOURS_COLLECTION = "Horas-Trabajadas"; //Coleccion de horas
+const HOURS_COLLECTION = "Horas-Trabajadas"; // Colección de horas
 
 // Función para insertar datos en la colección de empleados
 export const insertData = async (formData) => {
@@ -28,20 +27,17 @@ export const insertData = async (formData) => {
 // Función para obtener el perfil de un usuario por su correo
 export async function getUserProfile(correo) {
   try {
-    // Crea una consulta para buscar el documento en la colección 'Registro-Empleados' donde el correo coincida
     const userQuery = query(
       collection(db, USERS_COLLECTION),
-      where("Correo", "==", correo) // Usa "Correo" como el campo adecuado
+      where("Correo", "==", correo)
     );
 
-    // Obtén los documentos que coinciden con la consulta
     const results = await getDocs(userQuery);
 
-    // Si se encontraron resultados, devuelve el primer usuario encontrado
     if (results.size > 0) {
       const [user] = results.docs.map((item) => ({
-        ...item.data(), // Trae todos los datos del documento
-        id: item.id, // Incluye el ID del documento
+        ...item.data(),
+        id: item.id,
       }));
       return user;
     } else {
@@ -54,10 +50,9 @@ export async function getUserProfile(correo) {
   }
 }
 
+// Función para obtener todos los usuarios
 export async function getUser() {
-  const userQuery = query(
-    collection(db, USERS_COLLECTION)
-  );
+  const userQuery = query(collection(db, USERS_COLLECTION));
   const results = await getDocs(userQuery);
   if (results.size > 0) {
     const users = results.docs.map((item) => ({
@@ -69,29 +64,39 @@ export async function getUser() {
 }
 
 // Función para actualizar los datos del usuario
-export async function updateProfile(data, userId) {
+export async function updateUserProfile(userId, userData) {
+  // Verifica que userId sea una cadena
+  if (typeof userId !== "string") {
+    console.error("Error: El ID del usuario no es una cadena.");
+    return false; // Detener ejecución si no es una cadena
+  }
+
+  if (!userId) {
+    console.error("Error: El ID del usuario es indefinido.");
+    return false; // Detener ejecución si está indefinido
+  }
+
   try {
-    const userRef = doc(db, USERS_COLLECTION, userId); // Referencia al documento del usuario
-    await updateDoc(userRef, data); // Actualiza el documento con los nuevos datos
-    return true; // Retorna true si la actualización fue exitosa
+    const userRef = doc(db, USERS_COLLECTION, userId);
+    await updateDoc(userRef, userData);
+    console.log("Perfil actualizado con éxito");
+    return true;
   } catch (error) {
     console.error("Error al actualizar el perfil del usuario: ", error);
-    throw error; // Lanza el error para manejo posterior
+    throw error;
   }
 }
 
+// Función para obtener el sueldo de un usuario por su correo
 export async function getUserSalaryByEmail(correo) {
   try {
-    // Crea una consulta para buscar el documento en la colección 'registro-empleados' donde el correo coincida
     const userQuery = query(
-      collection(db, "Registro-Empleados"),
+      collection(db, USERS_COLLECTION),
       where("Correo", "==", correo)
     );
 
-    // Obtén los documentos que coinciden con la consulta
     const results = await getDocs(userQuery);
 
-    // Si se encontraron resultados, devuelve el campo 'Sueldo' del primer documento encontrado
     if (results.size > 0) {
       const [userDoc] = results.docs;
       return userDoc.data().Sueldo;
@@ -105,18 +110,16 @@ export async function getUserSalaryByEmail(correo) {
   }
 }
 
-// anadir records a la BDD
+// Añadir registros a la base de datos
 export async function addTimeRecordToBDD(userEmail, startTime, endTime, horas) {
   try {
     const userQuery = query(
       collection(db, USERS_COLLECTION),
-      where("Correo", "==", userEmail) // Usa "Correo" como el campo adecuado
+      where("Correo", "==", userEmail)
     );
 
-    // Obtén los documentos que coinciden con la consulta
     const results = await getDocs(userQuery);
 
-    // Se encontró al menos un documento
     if (!results.empty) {
       results.forEach((doc) => {
         const data = doc.data();
@@ -128,20 +131,19 @@ export async function addTimeRecordToBDD(userEmail, startTime, endTime, horas) {
       console.log("No se encontró ningún usuario con el correo proporcionado.");
     }
   } catch (error) {
-    console.error("Error en la funcion anadir time record");
+    console.error("Error en la función añadir time record");
     throw error;
   }
 }
 
-//pa no poner todo en la misma funcion
+// Función auxiliar para añadir registros por cédula
 async function addRecordByCedula(cedula, startTime, endTime, horas) {
   try {
     const userQuery = query(
       collection(db, HOURS_COLLECTION),
-      where("ID", "==", cedula) // Usa la cedula
+      where("ID", "==", cedula)
     );
 
-    // Obtener los documentos que coinciden con la consulta
     const results = await getDocs(userQuery);
 
     if (!results.empty) {
@@ -171,17 +173,14 @@ async function addRecordByCedula(cedula, startTime, endTime, horas) {
           },
         ],
       });
-      console.log("Creadinho");
+      console.log("Registro creado con éxito");
     }
   } catch (error) {
     console.error("Error añadiendo el registro de horas: ", error);
   }
 }
 
-export async function getTimeRecordsByDay(userEmail) {
-  //Aqui necesitamos traer una lista de records por dia y los que coincidan en dia deberian estar en la monda de los registros
-}
-
+// Función para obtener los registros de horas
 export const getHoursRecords = async (cedula) => {
   try {
     const hoursCollection = collection(db, HOURS_COLLECTION);
@@ -194,7 +193,6 @@ export const getHoursRecords = async (cedula) => {
       const registroHoras = doc.data()["Registro de Horas"] || [];
       
       const formattedRecords = registroHoras.map((record, index) => {
-        // Convertir los timestamps de Firestore a objetos Date
         const startTime = record["fecha inicio"]?.toDate?.() || new Date(record["fecha inicio"]);
         const endTime = record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
         
@@ -214,7 +212,4 @@ export const getHoursRecords = async (cedula) => {
     console.error("Error al obtener los registros de horas:", error);
     throw error;
   }
-};
-
-
-
+}; 

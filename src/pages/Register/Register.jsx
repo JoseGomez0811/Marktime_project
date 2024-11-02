@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import styles from "./Register.module.css"; // Importa estilos con CSS Modules
 import { useNavigate } from "react-router-dom";
-import {registerWithEmailAndPassword} from "../../../firebase/auth-service"
+import { registerWithEmailAndPassword } from "../../../firebase/auth-service";
 import { TRACKING_URL } from "../../constants/urls";
 import { toast } from 'react-toastify';
 import { insertData } from "../../../firebase/users-service";
 
-export function RegistroUsuario()  {
+export function RegistroUsuario() {
   const notifyError = (mensaje) => toast.error(mensaje);
   const navigate = useNavigate();
 
@@ -48,28 +48,29 @@ export function RegistroUsuario()  {
 
   const onSuccess = () => {
     navigate(TRACKING_URL);
-};
+  };
 
-const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyError("REGISTER FAILED, Try Again");};
-
+  const onFail = (_error) => {
+    console.log("REGISTER FAILED, Try Again");
+    notifyError("REGISTER FAILED, Try Again");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       if (validate()) {
         const result = await registerWithEmailAndPassword(formData.correo, formData.password);
-  
+
         await insertData(formData);
         alert("Registro exitoso");
 
-        onSuccess()
-  
+        onSuccess();
+
       } else {
         console.log("Ocurrio un error desconocido");
-
-        onFail()
+        onFail();
       }
-      
+
     } catch (error) {
       console.error("Error al registrar los datos: ", error);
       alert("Error al registrar los datos");
@@ -85,11 +86,11 @@ const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyEr
   };
 
   return (
-    <div className={styles.root}> 
+    <div className={styles.root}>
       <h1>Registro de Usuario</h1>
       <div className={styles.card}>
         <form onSubmit={handleSubmit}>
-          <div className={styles.formRow}> 
+          <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="nombres">Nombres:</label>
               <input
@@ -132,14 +133,18 @@ const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyEr
 
             <div className={styles.formGroup}>
               <label htmlFor="cargo">Cargo:</label>
-              <input
-                type="text"
+              <select
                 id="cargo"
                 name="cargo"
                 value={formData.cargo}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Seleccione:</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Empleador">Empleador</option>
+                <option value="Recursos Humanos">Recursos Humanos</option>
+              </select>
             </div>
           </div>
 
@@ -173,14 +178,27 @@ const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyEr
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="banco">Banco:</label>
-              <input
-                type="text"
+              <select
                 id="banco"
                 name="banco"
                 value={formData.banco}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">Seleccione:</option>
+                <option value="Banco de Venezuela">Banco de Venezuela</option>
+                <option value="Banco Bicentenario">Banco Bicentenario</option>
+                <option value="Banco del Tesoro">Banco del Tesoro</option>
+                <option value="Banco Provincial">Banco Provincial</option>
+                <option value="Banco Mercantil">Banco Mercantil</option>
+                <option value="Banco Nacional de Crédito">Banco Nacional de Crédito</option>
+                <option value="Banco Exterior">Banco Exterior</option>
+                <option value="Banesco">Banesco</option>
+                <option value="Banco Plaza">Banco Plaza</option>
+                <option value="Bancaribe">Bancaribe</option>
+                <option value="BanPlus">BanPlus</option>
+                <option value="Banco Venezolano de Crédito">Banco Venezolano de Crédito</option>
+              </select>
             </div>
 
             <div className={styles.formGroup}>
@@ -225,7 +243,7 @@ const onFail = (_error) => { console.log("REGISTER FAILED, Try Again"); notifyEr
             </div>
           </div>
 
-          <button type="submit" className={styles.submitBtn} onClick={handleSubmit}>Registrar</button>
+          <button type="submit" className={styles.submitBtn}>Registrar</button>
         </form>
       </div>
     </div>
