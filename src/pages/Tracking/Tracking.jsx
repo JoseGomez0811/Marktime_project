@@ -19,17 +19,15 @@ import { getUserSalaryByEmail } from "../../../firebase/users-service";
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
   <div className={styles.overlayConfirmBox}>
-    {" "}
     <div className={styles.confirmBox}>
-      {" "}
-      <p>¿Está seguro que quiere parar el reloj?</p>{" "}
+      <p>¿Está seguro que quiere parar el reloj?</p>
       <button className={styles.startButton} onClick={onConfirm}>
         Sí
-      </button>{" "}
+      </button>
       <button className={styles.stopButton} onClick={onCancel}>
         No
-      </button>{" "}
-    </div>{" "}
+      </button>
+    </div>
   </div>
 );
 
