@@ -84,11 +84,11 @@ aside {
     width: 90%;
   }
   
-  
   .navItem:hover {
     background-color: #203359; /* Color de fondo en hover más suave */
     transform: scale(1.02); /* Efecto de escala en hover */
   }
+  
   
   .navItem svg {
     margin-right: 10px;

@@ -1,23 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/config";
-import { getUserProfile } from "../../firebase/users-service";
+import { getUserProfile, updateUserProfile } from "../../firebase/users-service";
 
-// Crear un contexto para el usuario
 export const UserContext = React.createContext(null);
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado para controlar el estado de carga
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listener de cambios en el estado de autenticación
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
           const userProfile = await getUserProfile(firebaseUser.email);
           if (userProfile) {
-            setUser(userProfile);
+            setUser({
+              ...userProfile,
+              id: String(userProfile.id),
+            });
             console.log("Usuario encontrado:", userProfile);
           } else {
             console.log("Perfil no encontrado para el usuario autenticado.");
@@ -31,25 +32,39 @@ export function UserContextProvider({ children }) {
         console.log("No hay un usuario autenticado.");
         setUser(null);
       }
-      setLoading(false); // Se ha completado el proceso de carga
+      setLoading(false);
     });
 
-    // Limpiar el listener cuando se desmonte el componente
     return () => unsubscribe();
   }, []);
 
+  const updateUser = async (userId, userData) => {
+    try {
+      if (typeof userId !== "string") {
+        console.error("Error: El ID del usuario no es una cadena.");
+        return;
+      }
+      const result = await updateUserProfile(userId, userData);
+      if (result) {
+        console.log("Usuario actualizado con éxito");
+        setUser((prev) => ({ ...prev, ...userData })); // Actualiza el estado local
+      }
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+    }
+  };
+
   if (loading) {
-    return <div>Cargando...</div>; // Mostrar un indicador de carga mientras se obtiene el perfil
+    return <div>Cargando...</div>;
   }
 
   return (
-    <UserContext.Provider value={{ user }}>
+    <UserContext.Provider value={{ user, updateUser }}>
       {children}
     </UserContext.Provider>
   );
 }
 
-// Hook para usar el contexto del usuario
 export function useUserContext() {
   return useContext(UserContext);
 }

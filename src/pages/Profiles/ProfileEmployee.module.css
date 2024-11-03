@@ -107,4 +107,14 @@
       width: 100%;
       margin-top: 5px;
     }
+
+    .Button {
+      display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #2E6957;
+    mask-repeat: no-repeat;
+    mask-position: center;
   }
+
+ }

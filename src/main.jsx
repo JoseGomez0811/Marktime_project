@@ -27,8 +27,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to={TRACKING_URL} />} />
           <Route path={TRACKING_URL} element={<Tracking />} />
+
           <Route path="/" element={<Navigate to={PROFILE_URL} />} />
           <Route path={PROFILE_URL} element={<ProfileEmployee />} />
+          
           <Route path="/" element={<Navigate to={LIST_URL} />} />
           <Route path={LIST_URL} element={<UserList />} />
         </Route>

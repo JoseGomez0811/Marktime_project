@@ -132,22 +132,21 @@ h2{
 }
 
 .startButton {
-  background-color: #418552;
+  background-color: #2E6957;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
-  border: #418552;
 }
 
 .stopButton {
-  background-color: #8C564F;
+  background-color: #b60b1c;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
-  border: #8C564F;
 }
+
 
 .recordsCard {
   margin-top: 2rem;
@@ -182,11 +181,13 @@ h2{
   color: #000000; /* Color del texto por defecto */
   border-radius: 0.5rem; /* Bordes redondeados para toda la tabla */
   overflow: hidden; /* Asegurar que el contenido también esté dentro de los bordes */
+  border-color: #000000;
 }
 
 .table th, .table td {
   padding: 1rem;
   text-align: left;
+  border-color: black;
 }
 
 /* Estilo solo para el encabezado */
@@ -196,6 +197,7 @@ h2{
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
+  border-color: #000000;
 }
 
 .table tbody td {

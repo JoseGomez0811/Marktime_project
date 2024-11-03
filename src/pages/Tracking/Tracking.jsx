@@ -107,25 +107,36 @@ export function Tracking() {
   const handleStop = () => {
     setShowConfirm(true);
     if (startTime) {
-      setIsRunning(false);
-      const endTime = new Date();
-      const duration = Number(
-        ((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1)
-      );
-      setRecords((prevRecords) => [
-        ...prevRecords,
-        {
-          id: prevRecords.length + 1,
-          start: startTime,
-          end: endTime,
-          duration: duration,
-        },
-      ]);
-      addTimeRecordToBDD(userEmail, startTime, endTime, duration);
-      setTime(0);
-      setStartTime(null);
+        setIsRunning(false);
+        const endTime = new Date();
+        const duration = Number(((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1));
+
+        // Crea el nuevo registro
+        const newRecord = {
+            id: hourRecords.length + 1, // Asegúrate de que el ID sea único
+            startTime: startTime,
+            endTime: endTime,
+            horas: duration,
+        };
+
+        // Actualiza el estado de hourRecords y también los records
+        setHourRecords((prevRecords) => [...prevRecords, newRecord]);
+        setRecords((prevRecords) => [
+            ...prevRecords,
+            {
+                id: prevRecords.length + 1,
+                start: startTime,
+                end: endTime,
+                duration: duration,
+            },
+        ]);
+
+        // Agrega el registro a la base de datos
+        addTimeRecordToBDD(userEmail, startTime, endTime, duration);
+        setTime(0);
+        setStartTime(null);
     }
-  };
+};
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
