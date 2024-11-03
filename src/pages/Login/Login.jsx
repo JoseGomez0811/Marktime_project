@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; 
-import styles from "./Login.module.css"; 
+import { Link } from "react-router-dom";
+import styles from "./Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { TRACKING_URL, REGISTER_URL, PROFILE_URL } from "../../constants/urls";
-import {loginWithEmailAndPassword} from "../../../firebase/auth-service";
+import { loginWithEmailAndPassword } from "../../../firebase/auth-service";
 
 export function Login() {
   const navigate = useNavigate();
@@ -27,22 +27,30 @@ export function Login() {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; 
+    return Object.keys(newErrors).length === 0;
   };
 
-  const onSuccess = () => { navigate(PROFILE_URL); };
+  const onSuccess = () => {
+    navigate(PROFILE_URL);
+  };
 
-  const onFail = (_error) => { console.log("LOGIN FAILED, Try Again") };
+  const onFail = (_error) => {
+    console.log("LOGIN FAILED, Try Again");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validate()) {
-      const result = await loginWithEmailAndPassword(formData.correo, formData.password, onSuccess, onFail);
+      const result = await loginWithEmailAndPassword(
+        formData.correo,
+        formData.password,
+        onSuccess,
+        onFail
+      );
       console.log("Formulario de login enviado:", formData);
-      
-    }else {
+    } else {
       console.log("Campos incorectos");
-  }
+    }
   };
 
   const handleChange = (event) => {
@@ -69,7 +77,9 @@ export function Login() {
                 onChange={handleChange}
                 required
               />
-              {errors.correo && <span className={styles.error}>{errors.correo}</span>}
+              {errors.correo && (
+                <span className={styles.error}>{errors.correo}</span>
+              )}
             </div>
           </div>
 
@@ -84,17 +94,18 @@ export function Login() {
                 onChange={handleChange}
                 required
               />
-              {errors.password && <span className={styles.error}>{errors.password}</span>}
+              {errors.password && (
+                <span className={styles.error}>{errors.password}</span>
+              )}
             </div>
           </div>
 
           <div className={styles.buttonContainer}>
-            <button type="submit" className={styles.submitBtn}>Iniciar Sesión</button>
+            <button type="submit" className={styles.submitBtn}>
+              Iniciar Sesión
+            </button>
           </div>
         </form>
-        <div className={styles.registerLinkContainer}>
-  <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
-      </div>
       </div>
     </div>
   );
