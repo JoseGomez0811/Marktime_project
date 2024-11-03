@@ -227,3 +227,28 @@ export const getHoursRecords = async (cedula) => {
     throw error;
   }
 };
+
+export async function swapIDHourRegistry(oldCedula, newCedula) {
+  try {
+    const userQuery = query(
+      collection(db, HOURS_COLLECTION),
+      where("ID", "==", Number(oldCedula))
+    );
+
+    const results = await getDocs(userQuery);
+
+    if (!results.empty) {
+      results.forEach(async (document) => {
+        const docRef = doc(db, HOURS_COLLECTION, document.id);
+        await updateDoc(docRef, { ID: newCedula });
+      });
+    } else {
+      console.log("no encontre el archivo");
+    }
+  } catch (error) {
+    console.error(
+      "Error añadiendo en el update del id del registro de horas",
+      error
+    );
+  }
+}
