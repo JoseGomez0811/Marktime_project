@@ -232,7 +232,7 @@ export async function swapIDHourRegistry(oldCedula, newCedula) {
   try {
     const userQuery = query(
       collection(db, HOURS_COLLECTION),
-      where("ID", "==", Number(oldCedula))
+      where("ID", "==", oldCedula)
     );
 
     const results = await getDocs(userQuery);
