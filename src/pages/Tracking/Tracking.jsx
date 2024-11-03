@@ -15,7 +15,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./Tracking.module.css";
 import { auth } from "../../../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
-import { getUserSalaryByEmail } from "../../../firebase/users-service";
+import {
+  getUserSalaryByEmail,
+  addTimeRecordToBDD,
+} from "../../../firebase/users-service";
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
   <div className={styles.overlayConfirmBox}>
@@ -39,6 +42,7 @@ export function Tracking() {
   const [filter, setFilter] = useState({ type: "all", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -80,6 +84,14 @@ export function Tracking() {
   };
 
   const handleStop = () => {
+    setShowConfirm(true);
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+  }; // Oculta el recuadro de confirmación
+
+  const handleConfirmStop = () => {
     if (startTime) {
       setIsRunning(false);
       const endTime = new Date();
@@ -88,7 +100,6 @@ export function Tracking() {
       );
       setRecords((prevRecords) => [
         ...prevRecords,
-
         {
           id: prevRecords.length + 1,
           start: startTime,
@@ -96,9 +107,12 @@ export function Tracking() {
           duration: duration,
         },
       ]);
+      // Mandadito a Firestore
+      addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
       setStartTime(null);
     }
+    setShowConfirm(false); // Oculta el recuadro de confirmación
   };
 
   const formatTime = (time) => {
@@ -185,6 +199,13 @@ export function Tracking() {
                 </button>
               </div>
             </div>
+
+            {showConfirm && (
+              <ConfirmBox
+                onConfirm={handleConfirmStop}
+                onCancel={handleCancel}
+              />
+            )}
           </div>
 
           <div className={styles.statsCard}>
