@@ -20,6 +20,22 @@ import {
   getUserSalaryByEmail,
 } from "../../../firebase/users-service";
 
+const ConfirmBox = ({ onConfirm, onCancel }) => (
+  <div className={styles.overlayConfirmBox}>
+    {" "}
+    <div className={styles.confirmBox}>
+      {" "}
+      <p>¿Está seguro que quiere parar el reloj?</p>{" "}
+      <button className={styles.startButton} onClick={onConfirm}>
+        Sí
+      </button>{" "}
+      <button className={styles.stopButton} onClick={onCancel}>
+        No
+      </button>{" "}
+    </div>{" "}
+  </div>
+);
+
 export function Tracking() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -28,6 +44,7 @@ export function Tracking() {
   const [filter, setFilter] = useState({ type: "all", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -69,6 +86,13 @@ export function Tracking() {
   };
 
   const handleStop = () => {
+    setShowConfirm(true);
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+  }; // Oculta el recuadro de confirmación
+  const handleConfirmStop = () => {
     if (startTime) {
       setIsRunning(false);
       const endTime = new Date();
@@ -77,7 +101,6 @@ export function Tracking() {
       );
       setRecords((prevRecords) => [
         ...prevRecords,
-
         {
           id: prevRecords.length + 1,
           start: startTime,
@@ -85,11 +108,12 @@ export function Tracking() {
           duration: duration,
         },
       ]);
-      //mandadito a firestore
+      // Mandadito a Firestore
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
       setStartTime(null);
     }
+    setShowConfirm(false); // Oculta el recuadro de confirmación
   };
 
   const formatTime = (time) => {
@@ -177,6 +201,10 @@ export function Tracking() {
               </div>
             </div>
           </div>
+
+          {showConfirm && (
+            <ConfirmBox onConfirm={handleConfirmStop} onCancel={handleCancel} />
+          )}
 
           <div className={styles.statsCard}>
             <h2>Estadísticas</h2>
