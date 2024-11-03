@@ -1,20 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval } from 'date-fns';
-import { es } from 'date-fns/locale';
-import DatePicker from 'react-datepicker';
+import React, { useState, useEffect } from "react";
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  isWithinInterval,
+} from "date-fns";
+import { es } from "date-fns/locale";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import styles from './Tracking.module.css';
-import { auth} from '../../../firebase/config';
-import { onAuthStateChanged } from 'firebase/auth';
-import { getUserSalaryByEmail } from '../../../firebase/users-service';
+import styles from "./Tracking.module.css";
+import { auth } from "../../../firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
+import { getUserSalaryByEmail } from "../../../firebase/users-service";
+
+const ConfirmBox = ({ onConfirm, onCancel }) => (
+  <div className={styles.overlayConfirmBox}>
+    {" "}
+    <div className={styles.confirmBox}>
+      {" "}
+      <p>¿Está seguro que quiere parar el reloj?</p>{" "}
+      <button className={styles.startButton} onClick={onConfirm}>
+        Sí
+      </button>{" "}
+      <button className={styles.stopButton} onClick={onCancel}>
+        No
+      </button>{" "}
+    </div>{" "}
+  </div>
+);
 
 export function Tracking() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [records, setRecords] = useState([]);
   const [startTime, setStartTime] = useState(null);
-  const [filter, setFilter] = useState({ type: 'all', date: new Date() });
-  const [userEmail, setUserEmail] = useState('');
+  const [filter, setFilter] = useState({ type: "all", date: new Date() });
+  const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
 
   useEffect(() => {
@@ -29,7 +54,7 @@ export function Tracking() {
           console.error("Error al obtener el sueldo del usuario:", error);
         }
       } else {
-        setUserEmail('');
+        setUserEmail("");
         setUserSalary(null);
         console.log("No hay un usuario autenticado.");
       }
@@ -50,7 +75,7 @@ export function Tracking() {
       if (intervalId) clearInterval(intervalId);
     };
   }, [isRunning]);
-  
+
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
@@ -60,19 +85,18 @@ export function Tracking() {
     if (startTime) {
       setIsRunning(false);
       const endTime = new Date();
-      const duration = Number(((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1));
+      const duration = Number(
+        ((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1)
+      );
       setRecords((prevRecords) => [
         ...prevRecords,
-        
-        
+
         {
           id: prevRecords.length + 1,
           start: startTime,
           end: endTime,
-          duration: duration
-        }
-
-
+          duration: duration,
+        },
       ]);
       setTime(0);
       setStartTime(null);
@@ -83,37 +107,39 @@ export function Tracking() {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     const milliseconds = Math.floor((time * 10) % 10);
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}.${milliseconds}`;
   };
 
   const formatDate = (date) => {
-    return format(date, 'dd/MM/yyyy HH:mm:ss', { locale: es });
+    return format(date, "dd/MM/yyyy HH:mm:ss", { locale: es });
   };
 
   const filterRecords = (records, filter) => {
     switch (filter.type) {
-      case 'day':
-        return records.filter(record =>
-          record.start.toDateString() === filter.date.toDateString()
+      case "day":
+        return records.filter(
+          (record) => record.start.toDateString() === filter.date.toDateString()
         );
-      case 'week': {
+      case "week": {
         const weekStart = startOfWeek(filter.date, { weekStartsOn: 1 });
         const weekEnd = endOfWeek(filter.date, { weekStartsOn: 1 });
-        return records.filter(record =>
+        return records.filter((record) =>
           isWithinInterval(record.start, { start: weekStart, end: weekEnd })
         );
       }
-      case 'month': {
+      case "month": {
         const monthStart = startOfMonth(filter.date);
         const monthEnd = endOfMonth(filter.date);
-        return records.filter(record =>
+        return records.filter((record) =>
           isWithinInterval(record.start, { start: monthStart, end: monthEnd })
         );
       }
-      case 'year': {
+      case "year": {
         const yearStart = startOfYear(filter.date);
         const yearEnd = endOfYear(filter.date);
-        return records.filter(record =>
+        return records.filter((record) =>
           isWithinInterval(record.start, { start: yearStart, end: yearEnd })
         );
       }
@@ -125,7 +151,7 @@ export function Tracking() {
   const filteredRecords = filterRecords(records, filter);
   const totalUses = records.length;
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
-  const hourlyRate = userSalary/3600 ;
+  const hourlyRate = userSalary / 3600;
   const totalSalary = totalTime * hourlyRate;
 
   return (
@@ -133,7 +159,10 @@ export function Tracking() {
       <div className={styles.innerContainer}>
         <header className={styles.header}>
           <h1>Sistema de Control de Tiempo</h1>
-          <p>Gestione y registre el tiempo de sus actividades de manera eficiente.</p>
+          <p>
+            Gestione y registre el tiempo de sus actividades de manera
+            eficiente.
+          </p>
         </header>
 
         <div className={styles.grid}>
@@ -186,7 +215,9 @@ export function Tracking() {
               <select
                 className={styles.filterSelect}
                 value={filter.type}
-                onChange={(e) => setFilter(prev => ({ ...prev, type: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((prev) => ({ ...prev, type: e.target.value }))
+                }
               >
                 <option value="all">Todos los registros</option>
                 <option value="day">Por día</option>
@@ -194,10 +225,12 @@ export function Tracking() {
                 <option value="month">Por mes</option>
                 <option value="year">Por año</option>
               </select>
-              {filter.type !== 'all' && (
+              {filter.type !== "all" && (
                 <DatePicker
                   selected={filter.date}
-                  onChange={(date) => date && setFilter(prev => ({ ...prev, date }))}
+                  onChange={(date) =>
+                    date && setFilter((prev) => ({ ...prev, date }))
+                  }
                   dateFormat="dd/MM/yyyy"
                   className={styles.datePicker}
                 />
