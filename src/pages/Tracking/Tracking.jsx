@@ -19,8 +19,24 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
-  getHoursRecords
+  getHoursRecords,
 } from "../../../firebase/users-service";
+
+const ConfirmBox = ({ onConfirm, onCancel }) => (
+  <div className={styles.overlayConfirmBox}>
+    {" "}
+    <div className={styles.confirmBox}>
+      {" "}
+      <p>¿Está seguro que quiere parar el reloj?</p>{" "}
+      <button className={styles.startButton} onClick={onConfirm}>
+        Sí
+      </button>{" "}
+      <button className={styles.stopButton} onClick={onCancel}>
+        No
+      </button>{" "}
+    </div>{" "}
+  </div>
+);
 
 export function Tracking() {
   const [time, setTime] = useState(0);
@@ -30,11 +46,11 @@ export function Tracking() {
   const [filter, setFilter] = useState({ type: "all", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useUserContext();
 
-  // Firebase auth effect
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -74,10 +90,12 @@ export function Tracking() {
         try {
           setIsLoading(true);
           const records = await getHoursRecords(user.Cédula);
-          const validRecords = records.filter(record => {
-            const hasValidStartTime = record.startTime && !isNaN(new Date(record.startTime));
-            const hasValidEndTime = record.endTime && !isNaN(new Date(record.endTime));
-            const hasValidHoras = typeof record.horas === 'number';
+          const validRecords = records.filter((record) => {
+            const hasValidStartTime =
+              record.startTime && !isNaN(new Date(record.startTime));
+            const hasValidEndTime =
+              record.endTime && !isNaN(new Date(record.endTime));
+            const hasValidHoras = typeof record.horas === "number";
             return hasValidStartTime && hasValidEndTime && hasValidHoras;
           });
           setHourRecords(validRecords);
@@ -102,37 +120,48 @@ export function Tracking() {
   };
 
   const handleStop = () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmStop = () => {
     if (startTime) {
-        setIsRunning(false);
-        const endTime = new Date();
-        const duration = Number(((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1));
+      setIsRunning(false);
+      const endTime = new Date();
+      const duration = Number(
+        ((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1)
+      );
 
-        // Crea el nuevo registro
-        const newRecord = {
-            id: hourRecords.length + 1, // Asegúrate de que el ID sea único
-            startTime: startTime,
-            endTime: endTime,
-            horas: duration,
-        };
+      // Crea el nuevo registro
+      const newRecord = {
+        id: hourRecords.length + 1, // Asegúrate de que el ID sea único
+        startTime: startTime,
+        endTime: endTime,
+        horas: duration,
+      };
 
-        // Actualiza el estado de hourRecords y también los records
-        setHourRecords((prevRecords) => [...prevRecords, newRecord]);
-        setRecords((prevRecords) => [
-            ...prevRecords,
-            {
-                id: prevRecords.length + 1,
-                start: startTime,
-                end: endTime,
-                duration: duration,
-            },
-        ]);
+      // Actualiza el estado de hourRecords y también los records
+      setHourRecords((prevRecords) => [...prevRecords, newRecord]);
+      setRecords((prevRecords) => [
+        ...prevRecords,
+        {
+          id: prevRecords.length + 1,
+          start: startTime,
+          end: endTime,
+          duration: duration,
+        },
+      ]);
 
-        // Agrega el registro a la base de datos
-        addTimeRecordToBDD(userEmail, startTime, endTime, duration);
-        setTime(0);
-        setStartTime(null);
+      // Agrega el registro a la base de datos
+      addTimeRecordToBDD(userEmail, startTime, endTime, duration);
+      setTime(0);
+      setStartTime(null);
     }
-};
+    setShowConfirm(false); // Oculta el recuadro de confirmación
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+  }; // Oculta el recuadro de confirmación
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -145,36 +174,36 @@ export function Tracking() {
 
   const formatDate = (date) => {
     try {
-      if (!date) return 'Fecha no disponible';
-      
+      if (!date) return "Fecha no disponible";
+
       if (date?.toDate) {
         date = date.toDate();
       }
-      
-      if (typeof date === 'string') {
+
+      if (typeof date === "string") {
         date = new Date(date);
       }
-      
+
       if (date instanceof Date && !isNaN(date)) {
         return format(date, "dd/MM/yyyy HH:mm:ss", { locale: es });
       }
-      
-      return 'Fecha inválida';
+
+      return "Fecha inválida";
     } catch (error) {
-      console.error('Error al formatear fecha:', error);
-      return 'Error en fecha';
+      console.error("Error al formatear fecha:", error);
+      return "Error en fecha";
     }
   };
 
   const filterRecords = (records) => {
     if (!records || records.length === 0) return [];
-    
+
     const getDateFromTimestamp = (timestamp) => {
       if (!timestamp) return null;
       if (timestamp?.toDate) {
         return timestamp.toDate();
       }
-      if (typeof timestamp === 'string') {
+      if (typeof timestamp === "string") {
         return new Date(timestamp);
       }
       if (timestamp instanceof Date) {
@@ -183,7 +212,7 @@ export function Tracking() {
       return null;
     };
 
-    return records.filter(record => {
+    return records.filter((record) => {
       const recordStart = getDateFromTimestamp(record.startTime);
       if (!recordStart) return false;
 
@@ -199,17 +228,26 @@ export function Tracking() {
         case "week": {
           const weekStart = startOfWeek(filter.date, { weekStartsOn: 1 });
           const weekEnd = endOfWeek(filter.date, { weekStartsOn: 1 });
-          return isWithinInterval(recordStart, { start: weekStart, end: weekEnd });
+          return isWithinInterval(recordStart, {
+            start: weekStart,
+            end: weekEnd,
+          });
         }
         case "month": {
           const monthStart = startOfMonth(filter.date);
           const monthEnd = endOfMonth(filter.date);
-          return isWithinInterval(recordStart, { start: monthStart, end: monthEnd });
+          return isWithinInterval(recordStart, {
+            start: monthStart,
+            end: monthEnd,
+          });
         }
         case "year": {
           const yearStart = startOfYear(filter.date);
           const yearEnd = endOfYear(filter.date);
-          return isWithinInterval(recordStart, { start: yearStart, end: yearEnd });
+          return isWithinInterval(recordStart, {
+            start: yearStart,
+            end: yearEnd,
+          });
         }
         default:
           return true;
@@ -252,7 +290,18 @@ export function Tracking() {
                 </button>
               </div>
             </div>
+
+            {showConfirm && (
+              <ConfirmBox
+                onConfirm={handleConfirmStop}
+                onCancel={handleCancel}
+              />
+            )}
           </div>
+
+          {showConfirm && (
+            <ConfirmBox onConfirm={handleConfirmStop} onCancel={handleCancel} />
+          )}
 
           <div className={styles.statsCard}>
             <div className={styles.statsTitleWrapper}>
@@ -278,7 +327,9 @@ export function Tracking() {
               <select
                 className={styles.filterSelect}
                 value={filter.type}
-                onChange={(e) => setFilter((prev) => ({ ...prev, type: e.target.value }))}
+                onChange={(e) =>
+                  setFilter((prev) => ({ ...prev, type: e.target.value }))
+                }
               >
                 <option value="all">Todos los registros</option>
                 <option value="day">Por día</option>
@@ -289,7 +340,9 @@ export function Tracking() {
               {filter.type !== "all" && (
                 <DatePicker
                   selected={filter.date}
-                  onChange={(date) => date && setFilter((prev) => ({ ...prev, date }))}
+                  onChange={(date) =>
+                    date && setFilter((prev) => ({ ...prev, date }))
+                  }
                   dateFormat="dd/MM/yyyy"
                   className={styles.datePicker}
                   locale={es}
@@ -310,7 +363,9 @@ export function Tracking() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan="4" className="text-center">Cargando registros...</td>
+                    <td colSpan="4" className="text-center">
+                      Cargando registros...
+                    </td>
                   </tr>
                 ) : filteredHourRecords.length > 0 ? (
                   filteredHourRecords.map((record, index) => (
@@ -318,7 +373,11 @@ export function Tracking() {
                       <td>{record.id || index + 1}</td>
                       <td>{formatDate(record.startTime)}</td>
                       <td>{formatDate(record.endTime)}</td>
-                      <td>{typeof record.horas === 'number' ? formatTime(record.horas) : 'N/A'}</td>
+                      <td>
+                        {typeof record.horas === "number"
+                          ? formatTime(record.horas)
+                          : "N/A"}
+                      </td>
                     </tr>
                   ))
                 ) : (

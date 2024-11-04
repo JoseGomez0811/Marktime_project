@@ -1,4 +1,14 @@
-import { arrayUnion, doc, setDoc, updateDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore"; 
+import {
+  arrayUnion,
+  doc,
+  setDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "./config";
 
 const USERS_COLLECTION = "Registro-Empleados"; // Define la colección de usuarios
@@ -185,32 +195,60 @@ async function addRecordByCedula(cedula, startTime, endTime, horas) {
 export const getHoursRecords = async (cedula) => {
   try {
     const hoursCollection = collection(db, HOURS_COLLECTION);
-    const q = query(hoursCollection, where('ID', '==', cedula));
+    const q = query(hoursCollection, where("ID", "==", cedula));
     const querySnapshot = await getDocs(q);
-    
+
     let hoursRecords = [];
-    
+
     querySnapshot.forEach((doc) => {
       const registroHoras = doc.data()["Registro de Horas"] || [];
-      
+
       const formattedRecords = registroHoras.map((record, index) => {
-        const startTime = record["fecha inicio"]?.toDate?.() || new Date(record["fecha inicio"]);
-        const endTime = record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
-        
+        const startTime =
+          record["fecha inicio"]?.toDate?.() ||
+          new Date(record["fecha inicio"]);
+        const endTime =
+          record["fecha fin"]?.toDate?.() || new Date(record["fecha fin"]);
+
         return {
           id: index + 1,
           startTime,
           endTime,
-          horas: record.horas
+          horas: record.horas,
         };
       });
-      
+
       hoursRecords = [...hoursRecords, ...formattedRecords];
     });
-    
+
     return hoursRecords;
   } catch (error) {
     console.error("Error al obtener los registros de horas:", error);
     throw error;
   }
-}; 
+};
+
+export async function swapIDHourRegistry(oldCedula, newCedula) {
+  try {
+    const userQuery = query(
+      collection(db, HOURS_COLLECTION),
+      where("ID", "==", oldCedula)
+    );
+
+    const results = await getDocs(userQuery);
+
+    if (!results.empty) {
+      results.forEach(async (document) => {
+        const docRef = doc(db, HOURS_COLLECTION, document.id);
+        await updateDoc(docRef, { ID: newCedula });
+      });
+    } else {
+      console.log("no encontre el archivo");
+    }
+  } catch (error) {
+    console.error(
+      "Error añadiendo en el update del id del registro de horas",
+      error
+    );
+  }
+}
