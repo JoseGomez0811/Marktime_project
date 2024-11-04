@@ -43,7 +43,7 @@ export function Tracking() {
   const [isRunning, setIsRunning] = useState(false);
   const [records, setRecords] = useState([]);
   const [startTime, setStartTime] = useState(null);
-  const [filter, setFilter] = useState({ type: "all", date: new Date() });
+  const [filter, setFilter] = useState({ type: "day", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -57,7 +57,7 @@ export function Tracking() {
         setUserEmail(user.email);
         try {
           const salary = await getUserSalaryByEmail(user.email);
-          setUserSalary(salary);
+          setUserSalary(Number(salary));
         } catch (error) {
           console.error("Error al obtener el sueldo del usuario:", error);
         }
