@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom"; 
 import styles from "./Login.module.css"; 
 import { useNavigate } from "react-router-dom";
-import { TRACKING_URL, REGISTER_URL } from "../../constants/urls";
+import { TRACKING_URL, REGISTER_URL, PROFILE_URL } from "../../constants/urls";
 import {loginWithEmailAndPassword} from "../../../firebase/auth-service";
 
 export function Login() {
@@ -30,7 +30,7 @@ export function Login() {
     return Object.keys(newErrors).length === 0; 
   };
 
-  const onSuccess = () => { navigate(TRACKING_URL); };
+  const onSuccess = () => { navigate(PROFILE_URL); };
 
   const onFail = (_error) => { console.log("LOGIN FAILED, Try Again") };
 
@@ -93,10 +93,9 @@ export function Login() {
           </div>
         </form>
         <div className={styles.registerLinkContainer}>
-          <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
-        </div>
+  <p>¿No tienes una cuenta? <Link to={REGISTER_URL} className={styles.registerLink}>Regístrate</Link></p>
+      </div>
       </div>
     </div>
   );
 }
-

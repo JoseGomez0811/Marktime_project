@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useUserContext } from "../../contexts/UserContext";
 import {
   format,
   startOfWeek,
@@ -18,6 +19,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
+  getHoursRecords,
 } from "../../../firebase/users-service";
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
@@ -45,12 +47,14 @@ export function Tracking() {
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [hourRecords, setHourRecords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useUserContext();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserEmail(user.email);
-        console.log("Correo del usuario:", user.email);
         try {
           const salary = await getUserSalaryByEmail(user.email);
           setUserSalary(salary);
@@ -60,13 +64,13 @@ export function Tracking() {
       } else {
         setUserEmail("");
         setUserSalary(null);
-        console.log("No hay un usuario autenticado.");
       }
     });
 
     return () => unsubscribe();
   }, []);
 
+  // Timer effect
   useEffect(() => {
     let intervalId;
     if (isRunning) {
@@ -74,11 +78,41 @@ export function Tracking() {
         setTime((prevTime) => prevTime + 0.1);
       }, 100);
     }
-
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
   }, [isRunning]);
+
+  // Fetch records effect
+  useEffect(() => {
+    const fetchRecords = async () => {
+      if (user?.Cédula) {
+        try {
+          setIsLoading(true);
+          const records = await getHoursRecords(user.Cédula);
+          const validRecords = records.filter((record) => {
+            const hasValidStartTime =
+              record.startTime && !isNaN(new Date(record.startTime));
+            const hasValidEndTime =
+              record.endTime && !isNaN(new Date(record.endTime));
+            const hasValidHoras = typeof record.horas === "number";
+            return hasValidStartTime && hasValidEndTime && hasValidHoras;
+          });
+          setHourRecords(validRecords);
+        } catch (error) {
+          console.error("Error al obtener los registros de horas:", error);
+          setHourRecords([]);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+        setHourRecords([]);
+      }
+    };
+
+    fetchRecords();
+  }, [user]);
 
   const handleStart = () => {
     setIsRunning(true);
@@ -89,9 +123,6 @@ export function Tracking() {
     setShowConfirm(true);
   };
 
-  const handleCancel = () => {
-    setShowConfirm(false);
-  }; // Oculta el recuadro de confirmación
   const handleConfirmStop = () => {
     if (startTime) {
       setIsRunning(false);
@@ -99,6 +130,17 @@ export function Tracking() {
       const duration = Number(
         ((endTime.getTime() - startTime.getTime()) / 1000).toFixed(1)
       );
+
+      // Crea el nuevo registro
+      const newRecord = {
+        id: hourRecords.length + 1, // Asegúrate de que el ID sea único
+        startTime: startTime,
+        endTime: endTime,
+        horas: duration,
+      };
+
+      // Actualiza el estado de hourRecords y también los records
+      setHourRecords((prevRecords) => [...prevRecords, newRecord]);
       setRecords((prevRecords) => [
         ...prevRecords,
         {
@@ -108,13 +150,18 @@ export function Tracking() {
           duration: duration,
         },
       ]);
-      // Mandadito a Firestore
+
+      // Agrega el registro a la base de datos
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
       setStartTime(null);
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+  }; // Oculta el recuadro de confirmación
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -126,43 +173,90 @@ export function Tracking() {
   };
 
   const formatDate = (date) => {
-    return format(date, "dd/MM/yyyy HH:mm:ss", { locale: es });
-  };
+    try {
+      if (!date) return "Fecha no disponible";
 
-  const filterRecords = (records, filter) => {
-    switch (filter.type) {
-      case "day":
-        return records.filter(
-          (record) => record.start.toDateString() === filter.date.toDateString()
-        );
-      case "week": {
-        const weekStart = startOfWeek(filter.date, { weekStartsOn: 1 });
-        const weekEnd = endOfWeek(filter.date, { weekStartsOn: 1 });
-        return records.filter((record) =>
-          isWithinInterval(record.start, { start: weekStart, end: weekEnd })
-        );
+      if (date?.toDate) {
+        date = date.toDate();
       }
-      case "month": {
-        const monthStart = startOfMonth(filter.date);
-        const monthEnd = endOfMonth(filter.date);
-        return records.filter((record) =>
-          isWithinInterval(record.start, { start: monthStart, end: monthEnd })
-        );
+
+      if (typeof date === "string") {
+        date = new Date(date);
       }
-      case "year": {
-        const yearStart = startOfYear(filter.date);
-        const yearEnd = endOfYear(filter.date);
-        return records.filter((record) =>
-          isWithinInterval(record.start, { start: yearStart, end: yearEnd })
-        );
+
+      if (date instanceof Date && !isNaN(date)) {
+        return format(date, "dd/MM/yyyy HH:mm:ss", { locale: es });
       }
-      default:
-        return records;
+
+      return "Fecha inválida";
+    } catch (error) {
+      console.error("Error al formatear fecha:", error);
+      return "Error en fecha";
     }
   };
 
-  const filteredRecords = filterRecords(records, filter);
-  const totalUses = records.length;
+  const filterRecords = (records) => {
+    if (!records || records.length === 0) return [];
+
+    const getDateFromTimestamp = (timestamp) => {
+      if (!timestamp) return null;
+      if (timestamp?.toDate) {
+        return timestamp.toDate();
+      }
+      if (typeof timestamp === "string") {
+        return new Date(timestamp);
+      }
+      if (timestamp instanceof Date) {
+        return timestamp;
+      }
+      return null;
+    };
+
+    return records.filter((record) => {
+      const recordStart = getDateFromTimestamp(record.startTime);
+      if (!recordStart) return false;
+
+      switch (filter.type) {
+        case "day": {
+          const filterDate = filter.date;
+          return (
+            recordStart.getFullYear() === filterDate.getFullYear() &&
+            recordStart.getMonth() === filterDate.getMonth() &&
+            recordStart.getDate() === filterDate.getDate()
+          );
+        }
+        case "week": {
+          const weekStart = startOfWeek(filter.date, { weekStartsOn: 1 });
+          const weekEnd = endOfWeek(filter.date, { weekStartsOn: 1 });
+          return isWithinInterval(recordStart, {
+            start: weekStart,
+            end: weekEnd,
+          });
+        }
+        case "month": {
+          const monthStart = startOfMonth(filter.date);
+          const monthEnd = endOfMonth(filter.date);
+          return isWithinInterval(recordStart, {
+            start: monthStart,
+            end: monthEnd,
+          });
+        }
+        case "year": {
+          const yearStart = startOfYear(filter.date);
+          const yearEnd = endOfYear(filter.date);
+          return isWithinInterval(recordStart, {
+            start: yearStart,
+            end: yearEnd,
+          });
+        }
+        default:
+          return true;
+      }
+    });
+  };
+
+  // Calculate filtered records inside the render
+  const filteredHourRecords = filterRecords(hourRecords);
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
   const hourlyRate = userSalary / 3600;
   const totalSalary = totalTime * hourlyRate;
@@ -172,16 +266,12 @@ export function Tracking() {
       <div className={styles.innerContainer}>
         <header className={styles.header}>
           <h1>Sistema de Control de Tiempo</h1>
-          <p>
-            Gestione y registre el tiempo de sus actividades de manera
-            eficiente.
-          </p>
         </header>
 
         <div className={styles.grid}>
           <div className={styles.timerCard}>
-            <h2>Contador</h2>
             <div className="text-center">
+              <h2 className={styles.timerTitle}>Contador</h2>
               <div className={styles.timer}>{formatTime(time)}</div>
               <div className={styles.buttonGroup}>
                 <button
@@ -200,6 +290,13 @@ export function Tracking() {
                 </button>
               </div>
             </div>
+
+            {showConfirm && (
+              <ConfirmBox
+                onConfirm={handleConfirmStop}
+                onCancel={handleCancel}
+              />
+            )}
           </div>
 
           {showConfirm && (
@@ -207,19 +304,17 @@ export function Tracking() {
           )}
 
           <div className={styles.statsCard}>
-            <h2>Estadísticas</h2>
-            <div className={styles.statsGrid}>
-              <div>
-                <p>Número de Usos</p>
-                <p>{totalUses}</p>
-              </div>
-              <div>
+            <div className={styles.statsTitleWrapper}>
+              <h2 className={styles.statsTitle}>Estadísticas</h2>
+            </div>
+            <div className={styles.statsRow}>
+              <div className={styles.statItem}>
                 <p>Tiempo Total Acumulado</p>
                 <p>{formatTime(totalTime)}</p>
               </div>
-              <div>
+              <div className={styles.statItem}>
                 <p>Salario acumulado</p>
-                <p>{totalSalary}</p>
+                <p>{totalSalary.toFixed(1)}$</p>
               </div>
             </div>
           </div>
@@ -250,6 +345,7 @@ export function Tracking() {
                   }
                   dateFormat="dd/MM/yyyy"
                   className={styles.datePicker}
+                  locale={es}
                 />
               )}
             </div>
@@ -265,14 +361,32 @@ export function Tracking() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRecords.map((record) => (
-                  <tr key={record.id}>
-                    <td>{record.id}</td>
-                    <td>{formatDate(record.start)}</td>
-                    <td>{formatDate(record.end)}</td>
-                    <td>{formatTime(record.duration)}</td>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      Cargando registros...
+                    </td>
                   </tr>
-                ))}
+                ) : filteredHourRecords.length > 0 ? (
+                  filteredHourRecords.map((record, index) => (
+                    <tr key={record.id || index}>
+                      <td>{record.id || index + 1}</td>
+                      <td>{formatDate(record.startTime)}</td>
+                      <td>{formatDate(record.endTime)}</td>
+                      <td>
+                        {typeof record.horas === "number"
+                          ? formatTime(record.horas)
+                          : "N/A"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      No hay registros disponibles para el período seleccionado
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
