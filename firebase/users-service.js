@@ -16,7 +16,8 @@ export const insertData = async (formData) => {
       Cargo: formData.cargo,
       Banco: [formData.banco, parseInt(formData.cuenta)],
       Sueldo: parseFloat(formData.sueldo),
-      Password: formData.password, // Asegúrate de manejar las contraseñas de forma segura
+      Password: formData.password,
+      Status: 'Desconectado' 
     });
     console.log("Documento agregado con éxito");
   } catch (error) {
