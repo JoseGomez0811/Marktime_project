@@ -188,7 +188,7 @@ export function RegistroUsuario() {
                 <option value="">Seleccione:</option>
                 <option value="Banco de Venezuela">Banco de Venezuela</option>
                 <option value="Banco Bicentenario">Banco Bicentenario</option>
-                <option value="Banco del Tesoro">Banco del Tesoro</option>
+                <option value="Bancamiga">Bancamiga</option>
                 <option value="Banco Provincial">Banco Provincial</option>
                 <option value="Banco Mercantil">Banco Mercantil</option>
                 <option value="Banco Nacional de Crédito">Banco Nacional de Crédito</option>

@@ -58,7 +58,7 @@ export default function ProfileEmployee() {
         }
         try {
             await updateUser(
-                String(user.id), // Convertimos el ID a cadena aquí también por seguridad
+                String(user.id), 
                 {
                     Cédula: editableUser.Cedula, 
                     NumeroDeTelefono: editableUser.NumeroDeTelefono, 
@@ -95,9 +95,11 @@ export default function ProfileEmployee() {
                             onChange={handleChange}
                             readOnly={!isEditing}
                         />
-                        <button className={styles.editButton} aria-label="Editar Cédula" onClick={handleEdit}>
-                            <span className={styles.editIcon}></span>
-                        </button>
+                        {isHR && (
+                            <button className={styles.editButton} aria-label="Editar Cédula" onClick={handleEdit}>
+                                <span className={styles.editIcon}></span>
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className={styles.infoField}>
@@ -214,4 +216,4 @@ export default function ProfileEmployee() {
             </div>
         </div>
     );
-} 
+}
