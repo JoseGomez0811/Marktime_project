@@ -251,3 +251,6 @@ export async function swapIDHourRegistry(oldCedula, newCedula) {
     );
   }
 }
+
+//Para guardar el nuevo salario
+export async function updateBDDAccumulatedSalary(email) {}

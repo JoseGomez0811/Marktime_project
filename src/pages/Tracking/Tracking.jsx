@@ -49,6 +49,8 @@ export function Tracking() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalSalary, setTotalSalary] = useState(0);
+  const [userCedula, setUserCedula] = useState("");
   const { user } = useUserContext();
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export function Tracking() {
         try {
           const salary = await getUserSalaryByEmail(user.email);
           setUserSalary(Number(salary));
+          setTotalSalary(0);
         } catch (error) {
           console.error("Error al obtener el sueldo del usuario:", error);
         }
@@ -89,6 +92,9 @@ export function Tracking() {
       if (user?.Cédula) {
         try {
           setIsLoading(true);
+          setUserCedula(user.Cédula);
+          setTotalSalary(0);
+
           const records = await getHoursRecords(user.Cédula);
           const validRecords = records.filter((record) => {
             const hasValidStartTime =
@@ -259,7 +265,6 @@ export function Tracking() {
   const filteredHourRecords = filterRecords(hourRecords);
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
   const hourlyRate = userSalary / 3600;
-  const totalSalary = totalTime * hourlyRate;
 
   return (
     <div className={styles.container}>
