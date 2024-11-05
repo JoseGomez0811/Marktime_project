@@ -252,11 +252,13 @@ export default function ProfileEmployee() {
             </button>
           </div>
         </div>
-        {isEditing && (
-          <button onClick={handleSave} className={styles.saveButton}>
-            Guardar cambios
-          </button>
-        )}
+        <div className={styles.containerButton}>
+          {isEditing && (
+            <button onClick={handleSave} className={styles.saveButton}>
+              Guardar cambios
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

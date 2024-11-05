@@ -1,4 +1,3 @@
-// components/EmployeeList.jsx
 import React, { useState, useEffect } from 'react';
 import styles from "./EmployeeList.module.css";
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
@@ -12,22 +11,30 @@ export default function UserList() {
     const [editableUser, setEditableUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
-    // Obtener todos los usuarios de Firebase
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const querySnapshot = await getDocs(collection(db, 'Registro-Empleados'));
-                const usersData = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setAllUsers(usersData);
-            } catch (error) {
-                console.error("Error al obtener usuarios:", error);
-            }
-        };
+    // Función para obtener todos los usuarios de Firebase
+    const fetchUsers = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'Registro-Empleados'));
+            const usersData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setAllUsers(usersData);
+        } catch (error) {
+            console.error("Error al obtener usuarios:", error);
+        }
+    };
 
-        fetchUsers();
+    // useEffect para cargar usuarios al montar el componente y configurar el intervalo
+    useEffect(() => {
+        fetchUsers(); // Llama a la función una vez al cargar el componente
+
+        const intervalId = setInterval(() => {
+            fetchUsers(); // Llama a la función cada 5 segundos
+        }, 5000);
+
+        // Limpieza del intervalo al desmontar el componente
+        return () => clearInterval(intervalId);
     }, []);
 
     const handleEdit = () => {
@@ -256,11 +263,13 @@ export default function UserList() {
                                         )}
                                     </div>
                                 </div>
-                                {isEditing && (
-                                    <button onClick={handleSave} className={styles.saveButton}>
-                                    Guardar cambios
-                                </button>
-                                )}
+                                <div className={styles.containerButton}>
+                                    {isEditing && (
+                                        <button onClick={handleSave} className={styles.saveButton}>
+                                        Guardar cambios
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </>
                     ) : (
@@ -270,4 +279,4 @@ export default function UserList() {
             </div>
         </div>
     );
-}  
+}
