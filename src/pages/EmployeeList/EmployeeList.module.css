@@ -9,7 +9,7 @@
 
 .container1 {
   width: 35%;
-  background-color: #E8EFEC;
+  background-color: #203359;
   padding: 1.5rem;
   margin-right: 1rem;
   overflow-y: auto;
@@ -19,7 +19,7 @@
 
 .container2 {
   width: 65%;
-  background-color: #E8EFEC;
+  background-color: #203359;
   padding: 1.5rem;
   height: 100%;
   overflow-y: auto;
@@ -39,7 +39,7 @@
 
 .userCard1 {
   width: 100%;
-  background-color: #ffffff;
+  background-color: #3b82f6;
   padding: 1rem;
   border-radius: 8px;
   cursor: pointer;
@@ -50,16 +50,16 @@
 .userCard1:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #48735F;
+  background-color: #7897c9;
 }
 
 .selected1 {
-  border: 2px solid #48735F;
-  background-color: #ebf8ff;
+  border: 2px solid #ebf8ff;
+  background-color: #7897c9;
 }
 
 .userName1 {
-  color: #4a5568;
+  color: #ffffff;
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
@@ -67,18 +67,18 @@
 
 .userPosition1 {
   margin: 0.5rem 0;
-  color: #718096;
+  color: #c5cedb;
   font-size: 0.875rem;
 }
 
 .statusWorking1 {
-  color: #48bb78;
+  color: #26d06d;
   font-size: 0.875rem;
   margin: 0;
 }
 
 .statusDisconnected1 {
-  color: #e53e3e;
+  color: #ec2929;
   font-size: 0.875rem;
   margin: 0;
 }
@@ -88,7 +88,7 @@
 }
 
 .userProfile {
-  background-color: #E8EFEC;
+  background-color: #203359;
   border-radius: 15px;
   padding: 20px;
   /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
@@ -110,7 +110,7 @@
 }
 
 .userName {
-  color: #4CAF50;
+  color: #ffffff;
   font-size: 35px;
   margin: 0;
   margin-left: 3rem;
@@ -132,7 +132,7 @@
 }
 
 .infoField label {
-  color: #4CAF50;
+  color: #ffffff;
   font-weight: bold;
   margin-right: 1rem;
   width: 30%; 
@@ -140,7 +140,7 @@
 }
 
 label[for="nombreBanco"] {
-  color: #4CAF50;
+  color: #ffffff;
   font-weight: bold;
   margin-left: 0;
   width: 30%; 
@@ -148,7 +148,7 @@ label[for="nombreBanco"] {
 }
 
 label[for="numeroCuenta"] {
-  color: #4CAF50;
+  color: #ffffff;
   font-weight: bold;
   margin-left: 0;
   width: 30%; 
@@ -181,10 +181,30 @@ label[for="numeroCuenta"] {
   display: inline-block;
   width: 20px;
   height: 20px;
-  background-color: #4CAF50;
+  background-color: #3b82f6;
   mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>');
   mask-repeat: no-repeat;
   mask-position: center;
+}
+
+.containerButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+
+.saveButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 40%;
+  height: 40px;
+  background-color: #418552;
+  border-radius: 15px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 /* Resto de los estilos se mantienen igual... */

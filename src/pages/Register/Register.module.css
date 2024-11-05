@@ -3,21 +3,21 @@
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
-    background-color: #f4f4f4;
+    background-color: rgba(255, 255, 255, 0);
     font-family: 'Poppins', sans-serif;
-    color: black;
+    color: white;
 }
 
 .card {
     padding: 2em;
-    background-color: #ffffff;
+    background-color: #203359;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    width: 400px;
+    width: 75%;
     margin: 2rem auto;
     text-align: left;
     font-family: 'Poppins', sans-serif;
-    color: black;
+    color: white;
 }
 
 .formRow {
@@ -41,7 +41,7 @@ input {
     padding: 8px; 
     margin: 0.5em 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box; 
 }
@@ -55,19 +55,27 @@ select {
     font-family: 'Poppins', sans-serif;
     box-sizing: border-box; 
 }
+
+.containerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+}
+
 .submitBtn {
-    background-color: #007bff;
+    background-color: #418552;
     color: white;
     border: none;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    width: 100%;
+    width: 50%;
     font-size: 1.2em;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
 }
 
 .submitBtn:hover {
-    background-color: #0056b3;
+    background-color: #1f8138;
 }

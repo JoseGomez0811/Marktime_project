@@ -47,7 +47,7 @@ export function RegistroUsuario() {
   };
 
   const onSuccess = () => {
-    navigate(TRACKING_URL);
+    //navigate(REGISTER_URL);
   };
 
   const onFail = (_error) => {
@@ -242,8 +242,9 @@ export function RegistroUsuario() {
               />
             </div>
           </div>
-
-          <button type="submit" className={styles.submitBtn}>Registrar</button>
+          <div className={styles.containerButton}>
+            <button type="submit" className={styles.submitBtn}>Registrar</button>
+          </div>
         </form>
       </div>
     </div>

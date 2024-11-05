@@ -252,3 +252,28 @@ export async function swapIDHourRegistry(oldCedula, newCedula) {
     );
   }
 }
+
+export async function updateEmployeeStatus(id, newStatus){
+  try {
+    const userQuery = query(
+      collection(db, USERS_COLLECTION),
+      where("Cédula", "==", id)
+    );
+
+    const results = await getDocs(userQuery);
+
+    if (!results.empty) {
+      results.forEach(async (document) => {
+        const docRef = doc(db, USERS_COLLECTION, document.id);
+        await updateDoc(docRef, { Status: newStatus });
+      });
+    } else {
+      console.log("no encontre el archivo");
+    }
+  } catch (error) {
+    console.error(
+      "Error añadiendo en el update del id del registro de horas",
+      error
+    );
+  }
+}

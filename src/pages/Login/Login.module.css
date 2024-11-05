@@ -4,8 +4,8 @@
     align-items: center;
     flex-direction: column;
     height: 100vh;
-    background-color: #f4f4f4;
-    color: black;
+    background: linear-gradient(to bottom,#0A1626, #1D1D1D);
+    color: white;
   }
   
   .title {
@@ -15,7 +15,7 @@
   }
   
   .card {
-    background-color: white;
+    background-color: #203359;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -53,7 +53,7 @@
 }
   
   .submitBtn {
-    background-color: #007bff;
+    background-color: #418552;
     color: white;
     padding: 10px;
     border: none;

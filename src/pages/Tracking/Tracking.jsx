@@ -20,7 +20,10 @@ import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
   getHoursRecords,
+  updateEmployeeStatus
 } from "../../../firebase/users-service";
+import "../../constants/counterWorker"
+
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
   <div className={styles.overlayConfirmBox}>
@@ -49,6 +52,8 @@ export function Tracking() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState("desconectado");
+
   const { user } = useUserContext();
 
   useEffect(() => {
@@ -69,7 +74,7 @@ export function Tracking() {
 
     return () => unsubscribe();
   }, []);
-
+  
   // Timer effect
   useEffect(() => {
     let intervalId;
@@ -117,6 +122,8 @@ export function Tracking() {
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
+    setStatus("Trabajando");
+    updateEmployeeStatus(user.Cédula, "Trabajando");
   };
 
   const handleStop = () => {
@@ -154,7 +161,10 @@ export function Tracking() {
       // Agrega el registro a la base de datos
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
+      
       setStartTime(null);
+      setStatus("Desconectado");
+      updateEmployeeStatus(user.Cédula, "Desconectado");
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
