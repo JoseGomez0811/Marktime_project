@@ -50,6 +50,7 @@
     margin-left: 5rem;
     width: 30%; 
     text-align: left; 
+    font-size: 1.4rem;
   }
   
   .infoField label[for="nombreBanco"] {

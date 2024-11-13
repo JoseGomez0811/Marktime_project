@@ -273,7 +273,7 @@ export default function UserList() {
                             </div>
                         </>
                     ) : (
-                        <div>No se ha seleccionado ningún usuario.</div>
+                        <div className={styles.noUser}>No se ha seleccionado ningún usuario.</div>
                     )}
                 </div>
             </div>

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import React, { useContext, useState } from "react";
 import { auth } from "../../firebase/config";
 import { getUserProfile, updateUserProfile } from "../../firebase/users-service";
 
@@ -7,59 +6,57 @@ export const UserContext = React.createContext(null);
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const userProfile = await getUserProfile(firebaseUser.email);
-          if (userProfile) {
-            setUser({
-              ...userProfile,
-              id: String(userProfile.id),
-            });
-            console.log("Usuario encontrado:", userProfile);
-          } else {
-            console.log("Perfil no encontrado para el usuario autenticado.");
-            setUser(null);
-          }
-        } catch (error) {
-          console.error("Error al obtener el perfil del usuario:", error);
-          setUser(null);
-        }
+  // Función para cargar el perfil del usuario al iniciar sesión desde Login
+  const loginUser = async (email) => {
+    setLoading(true);
+    try {
+      const userProfile = await getUserProfile(email);
+      if (userProfile) {
+        setUser({
+          ...userProfile,
+          id: String(userProfile.id),
+        });
       } else {
-        console.log("No hay un usuario autenticado.");
         setUser(null);
       }
-      setLoading(false);
-    });
+    } catch (error) {
+      console.error("Error al cargar el perfil del usuario:", error);
+      setUser(null);
+    }
+    setLoading(false);
+  };
 
-    return () => unsubscribe();
-  }, []);
+  const loadEmployees = async () => {
+    const fetchedEmployees = await getUser();
+    setEmployees(fetchedEmployees);
+  };
 
   const updateUser = async (userId, userData) => {
     try {
-      if (typeof userId !== "string") {
-        console.error("Error: El ID del usuario no es una cadena.");
-        return;
-      }
+      if (typeof userId !== "string") return;
       const result = await updateUserProfile(userId, userData);
       if (result) {
-        console.log("Usuario actualizado con éxito");
-        setUser((prev) => ({ ...prev, ...userData })); // Actualiza el estado local
+        setUser((prev) => ({ ...prev, ...userData }));
       }
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
     }
   };
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
   return (
-    <UserContext.Provider value={{ user, updateUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        loginUser,
+        updateUser,
+        employees,
+        loadEmployees,
+        loading,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

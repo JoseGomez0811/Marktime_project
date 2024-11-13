@@ -25,23 +25,100 @@ export function RegistroUsuario() {
 
   const [errors, setErrors] = useState({});
 
+  const validateField = (name, value) => {
+    const newErrors = { ...errors };
+  
+    switch (name) {
+      case 'nombres':
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.nombres = 'Los nombres solo pueden contener letras y acentos.';
+        } else {
+          delete newErrors.nombres;
+        }
+        break;
+      case 'apellidos':
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.apellidos = 'Los apellidos solo pueden contener letras y acentos.';
+        } else {
+          delete newErrors.apellidos;
+        }
+        break;
+        case 'cedula':
+          if (!value || /\D/.test(value)) {
+            newErrors.cedula = 'La cédula solo puede contener dígitos.';
+          } else {
+            delete newErrors.cedula;
+          }
+          break;
+      case 'sueldo':
+        if (!value || /\D/.test(value)) {
+          newErrors.sueldo = 'El sueldo solo puede contener números.';
+        } else {
+          delete newErrors.sueldo;
+        }
+        break;
+      case 'telefono':
+        if (!value || !/^\+?\d+$/.test(value)) {
+          newErrors.telefono = 'El número de teléfono solo puede contener dígitos y el signo +.';
+        } else {
+          delete newErrors.telefono;
+        }
+        break;
+        case 'cuenta':
+          if (!value || /\D/.test(value)) {
+            newErrors.cuenta = 'El número de cuenta solo puede contener dígitos.';
+          } else {
+            delete newErrors.cuenta;
+          }
+          break;
+      case 'correo':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value || !emailRegex.test(value)) {
+          newErrors.correo = 'El correo electrónico no es válido.';
+        } else {
+          delete newErrors.correo;
+        }
+        break;
+        case 'password':
+          if (!value || value.length < 8 || !/[A-Z]/.test(value) || !/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+            newErrors.password = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial.';
+          } else {
+            delete newErrors.password;
+          }
+          break;
+      default:
+        break;
+    }
+  
+    setErrors(newErrors);
+  };
+  
   const validate = () => {
     const newErrors = {};
-
-    if (!formData.nombres || /\d/.test(formData.nombres)) {
-      newErrors.nombres = 'Los nombres no pueden contener números.';
+  
+    if (!formData.nombres || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(formData.nombres)) {
+      newErrors.nombres = 'Los nombres solo pueden contener letras y acentos.';
     }
-    if (!formData.apellidos || /\d/.test(formData.apellidos)) {
-      newErrors.apellidos = 'Los apellidos no pueden contener números.';
+    if (!formData.apellidos || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(formData.apellidos)) {
+      newErrors.apellidos = 'Los apellidos solo pueden contener letras y acentos.';
     }
-
-    if (!formData.telefono || /\D/.test(formData.telefono)) {
-      newErrors.telefono = 'El número de teléfono solo puede contener dígitos.';
+    if (!formData.cedula || !/^\d+$/.test(formData.cedula)) {
+      newErrors.cedula = 'La cédula solo puede contener números.';
     }
-    if (!formData.cuenta || /\D/.test(formData.cuenta)) {
-      newErrors.cuenta = 'El número de cuenta solo puede contener dígitos.';
+    if (!formData.sueldo || /\D/.test(formData.sueldo)) {
+      newErrors.sueldo = 'El sueldo solo puede contener números.';
     }
-
+    if (!formData.telefono || !/^\+?\d+$/.test(formData.telefono)) {
+      newErrors.telefono = 'El número de teléfono solo puede contener dígitos y el signo +.';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.correo || !emailRegex.test(formData.correo)) {
+      newErrors.correo = 'El correo electrónico no es válido.';
+    }
+    if (!formData.password || formData.password.length < 8 || !/[A-Z]/.test(formData.password) || !/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial.';
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Retorna true si no hay errores
   };
@@ -83,6 +160,9 @@ export function RegistroUsuario() {
       ...formData,
       [name]: value,
     });
+  
+    // Validar el campo actual
+    validateField(name, value);
   };
 
   return (
@@ -129,6 +209,7 @@ export function RegistroUsuario() {
                 onChange={handleChange}
                 required
               />
+              {errors.cedula && <span className={styles.error}>{errors.cedula}</span>}
             </div>
 
             <div className={styles.formGroup}>
@@ -226,6 +307,7 @@ export function RegistroUsuario() {
                 onChange={handleChange}
                 required
               />
+              {errors.correo && <span className={styles.error}>{errors.correo}</span>}
             </div>
           </div>
 
@@ -240,6 +322,7 @@ export function RegistroUsuario() {
                 onChange={handleChange}
                 required
               />
+              {errors.password && <span className={styles.error}>{errors.password}</span>}
             </div>
           </div>
           <div className={styles.containerButton}>
