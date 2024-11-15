@@ -23,6 +23,7 @@ import {
   updateEmployeeStatus
 } from "../../../firebase/users-service";
 import "../../constants/counterWorker"
+import { Loading } from "../../components/Loading/Loading";
 
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
@@ -31,10 +32,10 @@ const ConfirmBox = ({ onConfirm, onCancel }) => (
     <div className={styles.confirmBox}>
       {" "}
       <p>¿Está seguro que quiere parar el reloj?</p>{" "}
-      <button className={styles.startButton} onClick={onConfirm}>
+      <button className={styles.startButton2} onClick={onConfirm}>
         Sí
       </button>{" "}
-      <button className={styles.stopButton} onClick={onCancel}>
+      <button className={styles.stopButton2} onClick={onCancel}>
         No
       </button>{" "}
     </div>{" "}
@@ -55,6 +56,15 @@ export function Tracking() {
   const [status, setStatus] = useState("desconectado");
 
   const { user } = useUserContext();
+
+  const [isLoading2, setIsLoading2] = useState(true);
+
+    useEffect(() => {
+        // Simula una carga de datos
+        setTimeout(() => {
+        setIsLoading(false);
+        }, 3000);
+    }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -272,6 +282,9 @@ export function Tracking() {
   const totalSalary = totalTime * hourlyRate;
 
   return (
+    <div>
+            {isLoading && <Loading />}
+            {!isLoading && (
     <div className={styles.container}>
       <div className={styles.innerContainer}>
         <header className={styles.header}>
@@ -402,6 +415,8 @@ export function Tracking() {
           </div>
         </div>
       </div>
+    </div>
+    )}
     </div>
   );
 }

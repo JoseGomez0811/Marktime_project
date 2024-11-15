@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Register.module.css"; // Importa estilos con CSS Modules
 import { useNavigate } from "react-router-dom";
 import { registerWithEmailAndPassword } from "../../../firebase/auth-service";
 import { TRACKING_URL } from "../../constants/urls";
 import { toast } from 'react-toastify';
 import { insertData } from "../../../firebase/users-service";
+import { Loading } from "../../components/Loading/Loading";
 
 export function RegistroUsuario() {
   const notifyError = (mensaje) => toast.error(mensaje);
@@ -24,6 +25,17 @@ export function RegistroUsuario() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showSuccessAlert2, setShowSuccessAlert2] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simula una carga de datos
+        setTimeout(() => {
+        setIsLoading(false);
+        }, 3000);
+    }, []);
 
   const validateField = (name, value) => {
     const newErrors = { ...errors };
@@ -124,11 +136,23 @@ export function RegistroUsuario() {
   };
 
   const onSuccess = () => {
+    setShowSuccessAlert(true);
+
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 2000);
+
     //navigate(REGISTER_URL);
   };
 
   const onFail = (_error) => {
-    console.log("REGISTER FAILED, Try Again");
+    setShowSuccessAlert2(true);
+
+    setTimeout(() => {
+      setShowSuccessAlert2(false);
+    }, 2000);
+
+    //console.log("REGISTER FAILED, Try Again");
     notifyError("REGISTER FAILED, Try Again");
   };
 
@@ -139,7 +163,7 @@ export function RegistroUsuario() {
         const result = await registerWithEmailAndPassword(formData.correo, formData.password);
 
         await insertData(formData);
-        alert("Registro exitoso");
+        //alert("Registro exitoso");
 
         onSuccess();
 
@@ -150,7 +174,7 @@ export function RegistroUsuario() {
 
     } catch (error) {
       console.error("Error al registrar los datos: ", error);
-      alert("Error al registrar los datos");
+      //alert("Error al registrar los datos");
     }
   };
 
@@ -166,7 +190,23 @@ export function RegistroUsuario() {
   };
 
   return (
+    <div>
+            {isLoading && <Loading />}
+            {!isLoading && (
     <div className={styles.root}>
+
+      {showSuccessAlert && (
+        <div className={`${styles.alert} ${styles.success2}`}>
+          ¡Se registró exitosamente!
+        </div>
+      )}
+
+      {showSuccessAlert2 && (
+        <div className={`${styles.alert2} ${styles.error2}`}>
+          ¡Error al registrar un nuevo usuario!
+        </div>
+      )}
+
       <h1>Registro de Usuario</h1>
       <div className={styles.card}>
         <form onSubmit={handleSubmit}>
@@ -330,6 +370,8 @@ export function RegistroUsuario() {
           </div>
         </form>
       </div>
+    </div>
+    )}
     </div>
   );
 }

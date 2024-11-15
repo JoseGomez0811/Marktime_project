@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useUserContext } from "../../contexts/UserContext";
 import styles from "./ProfileEmployee.module.css";
 import { swapIDHourRegistry } from "../../../firebase/users-service";
+import { Loading } from "../../components/Loading/Loading";
 
 export default function ProfileEmployee() {
   const { user, updateUser } = useUserContext();
@@ -17,7 +18,78 @@ export default function ProfileEmployee() {
     Banco: user?.Banco ?? ["", ""],
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case "nombres":
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.nombres = "Los nombres solo pueden contener letras y acentos.";
+        } else {
+          delete newErrors.nombres;
+        }
+        break;
+      case "apellidos":
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.apellidos = "Los apellidos solo pueden contener letras y acentos.";
+        } else {
+          delete newErrors.apellidos;
+        }
+        break;
+      case "Cedula":
+        if (!value || /\D/.test(value)) {
+          newErrors.Cedula = "La cédula solo puede contener dígitos.";
+        } else {
+          delete newErrors.Cedula;
+        }
+        break;
+      case "Sueldo":
+        if (!value || /\D/.test(value)) {
+          newErrors.sueldo = "El sueldo solo puede contener números.";
+        } else {
+          delete newErrors.sueldo;
+        }
+        break;
+      case "NumeroDeTelefono":
+        if (!value || !/^\+?\d+$/.test(value)) {
+          newErrors.telefono = "El número de teléfono solo puede contener dígitos y el signo +.";
+        } else {
+          delete newErrors.telefono;
+        }
+        break;
+      case "Banco[1]":
+        if (!value || /\D/.test(value)) {
+          newErrors.cuenta = "El número de cuenta solo puede contener dígitos.";
+        } else {
+          delete newErrors.cuenta;
+        }
+        break;
+      case "Correo":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value || !emailRegex.test(value)) {
+          newErrors.correo = "El correo electrónico no es válido.";
+        } else {
+          delete newErrors.correo;
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
   const [isEditing, setIsEditing] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -30,10 +102,8 @@ export default function ProfileEmployee() {
         Banco: user.Banco ?? ["", ""],
       });
     }
-
-    if (oldCedula === "" || oldCedula != user?.Cédula) {
-      // console.log("primera cedula: " + oldCed);
-      setOldCedula(oldCedula);
+    if (oldCedula === "" || oldCedula !== user?.Cédula) {
+      setOldCedula(user?.Cédula ?? "");
     }
   }, [user]);
 
@@ -52,12 +122,14 @@ export default function ProfileEmployee() {
         [name]: value,
       }));
     }
+    validateField(name, value);
   };
 
   const handleChangeCedula = (e) => {
-    const { value } = e.target;
+    const { name, value } = e.target;
     setEditableUser((prev) => ({ ...prev, Cedula: value }));
     setNewCedula(value);
+    validateField(name, value);
   };
 
   const handleEdit = () => {
@@ -89,6 +161,9 @@ export default function ProfileEmployee() {
   };
 
   return (
+    <div>
+            {isLoading && <Loading />}
+            {!isLoading && (
     <div className={styles.userProfile}>
       <div className={styles.userHeader}>
         <div className={styles.userAvatar}></div>
@@ -111,6 +186,7 @@ export default function ProfileEmployee() {
               onChange={handleChangeCedula}
               readOnly={!isEditing}
             />
+            
             {isHR && (
               <button
                 className={styles.editButton}
@@ -121,6 +197,7 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
+          {errors.Cedula && <span className={styles.error}>{errors.Cedula}</span>}
         </div>
         <div className={styles.infoField}>
           <label htmlFor="telefono">Número de teléfono:</label>
@@ -134,6 +211,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
+            {errors.telefono && <span className={styles.error}>{errors.telefono}</span>}
             <button
               className={styles.editButton}
               aria-label="Editar Número de teléfono"
@@ -155,6 +233,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
+            {errors.correo && <span className={styles.error}>{errors.correo}</span>}
             <button
               className={styles.editButton}
               aria-label="Editar Correo electrónico"
@@ -243,6 +322,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
+            {errors.cuenta && <span className={styles.error}>{errors.cuenta}</span>}
             <button
               className={styles.editButton}
               aria-label="Editar Número de cuenta"
@@ -260,6 +340,8 @@ export default function ProfileEmployee() {
           )}
         </div>
       </div>
+    </div>
+    )}
     </div>
   );
 }

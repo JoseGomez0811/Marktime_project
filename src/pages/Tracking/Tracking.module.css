@@ -350,16 +350,55 @@ td:nth-child(4) {
 }
 
 .confirmBox {
-  background-color: black;
-  padding: 20px;
-  border-radius: 10px;
+  background-color: #0A1626;
+  padding: 24px;
+  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1001;
   text-align: center;
+  width: 320px;
 }
 
 .confirmBox p {
-  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+}
+
+.startButton2 {
+  background-color: #203359;
+  border-color: #FFFFFF;
+  border-width: 1px;
+  color: #FFFFFF;
+  /* border: none; */
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 8px;
+  width: 80px;
+}
+
+.startButton2:hover{
+  background-color: #3b82f6;
+}
+
+.stopButton2 {
+  background-color: #8C564F;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 80px;
+}
+
+.stopButton2:hover {
+  background-color: #6B3C37;
 }
 
 .confirmButtonGroup {

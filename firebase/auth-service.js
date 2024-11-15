@@ -20,26 +20,26 @@ console.log('TODO MAL');
 
 export const loginWithEmailAndPassword = async (email, password, onSuccess, onFail) => {
 
-  try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    console.log('EXITO', result);
-  
-    if (onSuccess) {
-      //alert('Inicio de sesión exitoso');
-      onSuccess();
-    }
-    return true;
-  
-  } catch (error) {
-    console.error("LOGIN FAILED", { error });
-    if (onFail) {
-      alert("Inicio de sesión fallido")
-      onFail(error);
-    }
-    return false;
+try {
+  const result = await signInWithEmailAndPassword(auth, email, password);
+  console.log('EXITO', result);
+
+  if (onSuccess) {
+    //alert('Inicio de sesión exitoso');
+    onSuccess();
   }
-  
-  };
+  return true;
+
+} catch (error) {
+  console.error("LOGIN FAILED", { error });
+  if (onFail) {
+    //alert("Inicio de sesión fallido")
+    onFail(error);
+  }
+  return false;
+}
+
+};
 
 export const logout = async (callback) => {
 try {

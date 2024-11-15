@@ -3,6 +3,7 @@ import styles from "./EmployeeList.module.css";
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { useUserContext } from "../../contexts/UserContext";
+import { Loading } from "../../components/Loading/Loading";
 
 export default function UserList() {
     const { user } = useUserContext(); // Usuario actual autenticado
@@ -10,6 +11,15 @@ export default function UserList() {
     const [selectedUser, setSelectedUser] = useState(null);
     const [editableUser, setEditableUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simula una carga de datos
+        setTimeout(() => {
+        setIsLoading(false);
+        }, 3000);
+    }, []);
 
     // Función para obtener todos los usuarios de Firebase
     const fetchUsers = async () => {
@@ -81,14 +91,17 @@ export default function UserList() {
         }
     };
 
-    if (!allUsers.length) {
-        return <div>Cargando usuarios...</div>;
-    }
+    // if (!allUsers.length) {
+    //     return <div>Cargando usuarios...</div>;
+    // }
 
     // Verifica si el cargo es "Recursos Humanos"
     const isHR = user?.Cargo === "Recursos Humanos";
 
     return (
+        <div>
+            {isLoading && <Loading />}
+            {!isLoading && (
         <div className={styles.mainContainer}>
             <div className={styles.container1}>
                 <div className={styles.userList1}>
@@ -278,5 +291,7 @@ export default function UserList() {
                 </div>
             </div>
         </div>
+        )}
+    </div>
     );
 }
