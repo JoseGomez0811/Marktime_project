@@ -53,7 +53,7 @@ export function Tracking() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState("desconectado");
+  const [status, setStatus] = useState("Desconectado");
 
   const { user } = useUserContext();
 

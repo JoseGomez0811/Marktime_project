@@ -187,7 +187,7 @@ export default function ProfileEmployee() {
               readOnly={!isEditing}
             />
             
-            {isHR && (
+            {isHR && !isEditing && (
               <button
                 className={styles.editButton}
                 aria-label="Editar Cédula"
@@ -212,13 +212,17 @@ export default function ProfileEmployee() {
               readOnly={!isEditing}
             />
             {errors.telefono && <span className={styles.error}>{errors.telefono}</span>}
-            <button
-              className={styles.editButton}
-              aria-label="Editar Número de teléfono"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Número de teléfono"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
@@ -234,19 +238,22 @@ export default function ProfileEmployee() {
               readOnly={!isEditing}
             />
             {errors.correo && <span className={styles.error}>{errors.correo}</span>}
-            <button
-              className={styles.editButton}
-              aria-label="Editar Correo electrónico"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Correo electrónico"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
           <label htmlFor="cargo">Cargo:</label>
           <div className={styles.inputContainer}>
-            <input
+            <select
               type="text"
               id="cargo"
               name="Cargo"
@@ -254,8 +261,13 @@ export default function ProfileEmployee() {
               value={editableUser.Cargo}
               onChange={handleChange}
               readOnly={!isHR || !isEditing}
-            />
-            {isHR && (
+            >
+            <option value="">Seleccione:</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Empleador">Empleador</option>
+                <option value="Recursos Humanos">Recursos Humanos</option>
+              </select>
+            {isHR && !isEditing &&(
               <button
                 className={styles.editButton}
                 aria-label="Editar Cargo"
@@ -278,7 +290,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isHR || !isEditing}
             />
-            {isHR && (
+            {isHR && !isEditing &&(
               <button
                 className={styles.editButton}
                 aria-label="Editar Sueldo"
@@ -288,11 +300,12 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
+          {errors.sueldo && <span className={styles.error}>{errors.sueldo}</span>}
         </div>
         <div className={styles.infoField}>
           <label htmlFor="nombreBanco">Nombre del banco:</label>
           <div className={styles.inputContainer}>
-            <input
+            <select
               type="text"
               id="nombreBanco"
               name="Banco[0]"
@@ -300,14 +313,32 @@ export default function ProfileEmployee() {
               value={editableUser.Banco[0]}
               onChange={handleChange}
               readOnly={!isEditing}
-            />
-            <button
-              className={styles.editButton}
-              aria-label="Editar Nombre del banco"
-              onClick={handleEdit}
             >
-              <span className={styles.editIcon}></span>
-            </button>
+              <option value="">Seleccione:</option>
+                <option value="Banco de Venezuela">Banco de Venezuela</option>
+                <option value="Banco Bicentenario">Banco Bicentenario</option>
+                <option value="Bancamiga">Bancamiga</option>
+                <option value="Banco Provincial">Banco Provincial</option>
+                <option value="Banco Mercantil">Banco Mercantil</option>
+                <option value="Banco Nacional de Crédito">Banco Nacional de Crédito</option>
+                <option value="Banco Exterior">Banco Exterior</option>
+                <option value="Banesco">Banesco</option>
+                <option value="Banco Plaza">Banco Plaza</option>
+                <option value="Bancaribe">Bancaribe</option>
+                <option value="BanPlus">BanPlus</option>
+                <option value="Banco Venezolano de Crédito">Banco Venezolano de Crédito</option>
+              </select>
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Nombre del banco"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
@@ -323,13 +354,17 @@ export default function ProfileEmployee() {
               readOnly={!isEditing}
             />
             {errors.cuenta && <span className={styles.error}>{errors.cuenta}</span>}
-            <button
-              className={styles.editButton}
-              aria-label="Editar Número de cuenta"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Número de cuenta"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.containerButton}>

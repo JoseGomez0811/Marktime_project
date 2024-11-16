@@ -6,22 +6,85 @@ import { useUserContext } from "../../contexts/UserContext";
 import { Loading } from "../../components/Loading/Loading";
 
 export default function UserList() {
-    const { user } = useUserContext(); // Usuario actual autenticado
-    const [allUsers, setAllUsers] = useState([]); // Lista de todos los usuarios
+    const { user } = useUserContext();
+    const [allUsers, setAllUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [editableUser, setEditableUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-
     const [isLoading, setIsLoading] = useState(true);
+    const [errors, setErrors] = useState({});
+
+    const validateField = (name, value) => {
+        const newErrors = { ...errors };
+
+        switch (name) {
+            case "Nombres":
+                if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+                    newErrors[name] = "Los nombres solo pueden contener letras y acentos.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            case "Apellidos":
+                if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+                    newErrors[name] = "Los apellidos solo pueden contener letras y acentos.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            case "Cédula":
+                if (!value || !/^\d+$/.test(value)) {
+                    newErrors[name] = "La cédula solo puede contener dígitos.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            case "Sueldo":
+                if (!value || !/^\d+$/.test(value)) {
+                    newErrors[name] = "El sueldo solo puede contener números.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            case "NumeroDeTelefono":
+                if (!value || !/^\+?\d+$/.test(value)) {
+                    newErrors[name] = "El número de teléfono solo puede contener dígitos y el signo +.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            case "Banco":
+                if (Array.isArray(value)) {
+                    // Validar número de cuenta (índice 1)
+                    if (!value[1] || !/^\d+$/.test(value[1])) {
+                        newErrors.numeroCuenta = "El número de cuenta solo puede contener dígitos.";
+                    } else {
+                        delete newErrors.numeroCuenta;
+                    }
+                }
+                break;
+            case "Correo":
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!value || !emailRegex.test(value)) {
+                    newErrors[name] = "El correo electrónico no es válido.";
+                } else {
+                    delete newErrors[name];
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     useEffect(() => {
-        // Simula una carga de datos
         setTimeout(() => {
-        setIsLoading(false);
+            setIsLoading(false);
         }, 3000);
     }, []);
 
-    // Función para obtener todos los usuarios de Firebase
     const fetchUsers = async () => {
         try {
             const querySnapshot = await getDocs(collection(db, 'Registro-Empleados'));
@@ -35,37 +98,46 @@ export default function UserList() {
         }
     };
 
-    // useEffect para cargar usuarios al montar el componente y configurar el intervalo
     useEffect(() => {
-        fetchUsers(); // Llama a la función una vez al cargar el componente
-
+        fetchUsers();
         const intervalId = setInterval(() => {
-            fetchUsers(); // Llama a la función cada 5 segundos
+            fetchUsers();
         }, 5000);
-
-        // Limpieza del intervalo al desmontar el componente
         return () => clearInterval(intervalId);
     }, []);
 
     const handleEdit = () => {
         setIsEditing(true);
-        setEditableUser(selectedUser); // Cargar datos del usuario seleccionado para editar
+        setEditableUser(selectedUser);
+        setErrors({}); // Limpiar errores al comenzar edición
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setEditableUser((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        
+        // Manejo especial para el campo Banco que es un array
+        if (name.startsWith("Banco[")) {
+            const index = parseInt(name.charAt(6));
+            setEditableUser(prev => {
+                const newBanco = [...(prev.Banco || ["", ""])];
+                newBanco[index] = value;
+                const newUser = { ...prev, Banco: newBanco };
+                validateField("Banco", newBanco);
+                return newUser;
+            });
+        } else {
+            setEditableUser(prev => {
+                const newUser = { ...prev, [name]: value };
+                validateField(name, value);
+                return newUser;
+            });
+        }
     };
 
-    // Nueva función para actualizar solo el usuario en la base de datos
     const updateEmployee = async (id, updatedData) => {
         const userRef = doc(db, 'Registro-Empleados', id);
         try {
             await updateDoc(userRef, updatedData);
-            // Actualizamos localmente la lista sin cambiar el usuario autenticado
             setAllUsers((prev) =>
                 prev.map((u) => (u.id === id ? { ...u, ...updatedData } : u))
             );
@@ -79,23 +151,33 @@ export default function UserList() {
             console.error("No se pudo encontrar el ID del usuario.");
             return;
         }
+
+        // Validar todos los campos antes de guardar
+        let isValid = true;
+        const fieldsToValidate = ['Nombres', 'Apellidos', 'Cédula', 'NumeroDeTelefono', 'Correo', 'Sueldo', 'Banco'];
+        
+        fieldsToValidate.forEach(field => {
+            if (field === 'Banco') {
+                isValid = validateField(field, editableUser[field]) && isValid;
+            } else {
+                isValid = validateField(field, editableUser[field]) && isValid;
+            }
+        });
+
+        if (!isValid) {
+            return; // Detener el guardado si hay errores
+        }
+
         try {
-            await updateEmployee(
-                editableUser.id, // ID del empleado
-                editableUser      // Datos actualizados del empleado
-            );
-            setSelectedUser(editableUser); // Actualizar la vista del usuario seleccionado
-            setIsEditing(false); // Salir del modo edición
+            await updateEmployee(editableUser.id, editableUser);
+            setSelectedUser(editableUser);
+            setIsEditing(false);
+            setErrors({});
         } catch (error) {
             console.error("Error al guardar el usuario:", error);
         }
     };
 
-    // if (!allUsers.length) {
-    //     return <div>Cargando usuarios...</div>;
-    // }
-
-    // Verifica si el cargo es "Recursos Humanos"
     const isHR = user?.Cargo === "Recursos Humanos";
 
     return (
@@ -155,12 +237,13 @@ export default function UserList() {
                                             onChange={handleChange}
                                             readOnly={!isEditing}
                                         />
-                                        {isHR && (
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Cédula" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
                                         )}
                                     </div>
+                                    {errors.Cédula && <span className={styles.errorText}>{errors.Cédula}</span>}
                                 </div>
                                 <div className={styles.infoField}>
                                     <label htmlFor="telefono">Número de teléfono:</label>
@@ -174,12 +257,13 @@ export default function UserList() {
                                             onChange={handleChange}
                                             readOnly={!isEditing}
                                         />
-                                        {isHR && (
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Número de teléfono" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
                                         )}
                                     </div>
+                                    {errors.NumeroDeTelefono && <span className={styles.errorText}>{errors.NumeroDeTelefono}</span>}
                                 </div>
                                 <div className={styles.infoField}>
                                     <label htmlFor="email">Correo electrónico:</label>
@@ -193,17 +277,18 @@ export default function UserList() {
                                             onChange={handleChange}
                                             readOnly={!isEditing}
                                         />
-                                        {isHR && (
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Correo electrónico" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
                                         )}
                                     </div>
+                                    {errors.Correo && <span className={styles.errorText}>{errors.Correo}</span>}
                                 </div>
                                 <div className={styles.infoField}>
                                     <label htmlFor="cargo">Cargo:</label>
                                     <div className={styles.inputContainer}>
-                                        <input
+                                        <select
                                             type="text"
                                             id="cargo"
                                             name="Cargo"
@@ -211,8 +296,13 @@ export default function UserList() {
                                             value={editableUser?.Cargo || ""}
                                             onChange={handleChange}
                                             readOnly={!isHR || !isEditing}
-                                        />
-                                        {isHR && (
+                                        >
+                                            <option value="">Seleccione:</option>
+                                            <option value="Empleado">Empleado</option>
+                                            <option value="Empleador">Empleador</option>
+                                            <option value="Recursos Humanos">Recursos Humanos</option>
+                                        </select>
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Cargo" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
@@ -231,17 +321,18 @@ export default function UserList() {
                                             onChange={handleChange}
                                             readOnly={!isHR || !isEditing}
                                         />
-                                        {isHR && (
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Sueldo" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
                                         )}
                                     </div>
+                                    {errors.Sueldo && <span className={styles.error}>{errors.Sueldo}</span>}
                                 </div>
                                 <div className={styles.infoField}>
                                     <label htmlFor="nombreBanco">Nombre del banco:</label>
                                     <div className={styles.inputContainer}>
-                                        <input
+                                        <select
                                             type="text"
                                             id="nombreBanco"
                                             name="Banco[0]"
@@ -249,8 +340,22 @@ export default function UserList() {
                                             value={editableUser?.Banco[0] || ""}
                                             onChange={handleChange}
                                             readOnly={!isEditing}
-                                        />
-                                        {isHR && (
+                                        >
+                                            <option value="">Seleccione:</option>
+                                            <option value="Banco de Venezuela">Banco de Venezuela</option>
+                                            <option value="Banco Bicentenario">Banco Bicentenario</option>
+                                            <option value="Bancamiga">Bancamiga</option>
+                                            <option value="Banco Provincial">Banco Provincial</option>
+                                            <option value="Banco Mercantil">Banco Mercantil</option>
+                                            <option value="Banco Nacional de Crédito">Banco Nacional de Crédito</option>
+                                            <option value="Banco Exterior">Banco Exterior</option>
+                                            <option value="Banesco">Banesco</option>
+                                            <option value="Banco Plaza">Banco Plaza</option>
+                                            <option value="Bancaribe">Bancaribe</option>
+                                            <option value="BanPlus">BanPlus</option>
+                                            <option value="Banco Venezolano de Crédito">Banco Venezolano de Crédito</option>
+                                        </select>
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Nombre del banco" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
@@ -269,12 +374,13 @@ export default function UserList() {
                                             onChange={handleChange}
                                             readOnly={!isEditing}
                                         />
-                                        {isHR && (
+                                        {isHR && !isEditing && (
                                             <button className={styles.editButton} aria-label="Editar Número de cuenta" onClick={handleEdit}>
                                                 <span className={styles.editIcon}></span>
                                             </button>
                                         )}
                                     </div>
+                                    {errors.numeroCuenta && <span className={styles.errorText}>{errors.numeroCuenta}</span>}
                                 </div>
                                 <div className={styles.containerButton}>
                                     {isEditing && (

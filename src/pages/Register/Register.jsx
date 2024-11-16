@@ -280,6 +280,7 @@ export function RegistroUsuario() {
                 onChange={handleChange}
                 required
               />
+              {errors.sueldo && <span className={styles.error}>{errors.sueldo}</span>}
             </div>
 
             <div className={styles.formGroup}>

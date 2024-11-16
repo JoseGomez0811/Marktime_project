@@ -5,6 +5,7 @@ import { PROFILE_URL } from "../../constants/urls";
 import { loginWithEmailAndPassword } from "../../../firebase/auth-service";
 import { useUserContext } from "../../contexts/UserContext";
 import { Loading } from "../../components/Loading/Loading";
+import { updateEmployeeStatus } from "../../../firebase/users-service";
 
 
 
@@ -21,6 +22,9 @@ export function Login() {
   const [showSuccessAlert2, setShowSuccessAlert2] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [status, setStatus] = useState("Desconectado");
+  //const { user } = useUserContext();
 
     useEffect(() => {
         // Simula una carga de datos
@@ -65,6 +69,13 @@ export function Login() {
         onSuccess,
         onFail
       );
+
+      // if (user.Cargo === "Empleador" || user.Cargo === "Recursos Humanos"){
+      //   setStatus("Trabajando");
+      //   updateEmployeeStatus(user.Cédula, "Trabajando");
+      //   console.log("Si entro")
+      // }
+      
       console.log("Formulario de login enviado:", formData);
     } else {
       console.log("Campos incorectos");

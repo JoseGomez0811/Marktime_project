@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { getUserProfile, updateUserProfile } from "../../firebase/users-service";
+import { updateEmployeeStatus } from "../../firebase/users-service";
 
 export const UserContext = React.createContext(null);
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("Desconectado");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -20,6 +22,11 @@ export function UserContextProvider({ children }) {
               id: String(userProfile.id),
             });
             console.log("Usuario encontrado:", userProfile);
+            if (userProfile.Cargo === "Empleador" || userProfile.Cargo === "Recursos Humanos"){
+              setStatus("Trabajando");
+              updateEmployeeStatus(userProfile.Cédula, "Trabajando");
+              console.log("Si entro")
+            }
           } else {
             console.log("Perfil no encontrado para el usuario autenticado.");
             setUser(null);
