@@ -153,19 +153,21 @@ h2 {
 }
 
 .startButton {
-  background-color: #2E6957;
+  background-color: #418552;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
+  border: #418552;
 }
 
 .stopButton {
-  background-color: #b60b1c;
+  background-color: #8C564F;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: bold;
+  border: #8C564F;
 }
 
 

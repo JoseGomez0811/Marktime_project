@@ -21,9 +21,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Navigate to={LOGIN_URL} />} />
         <Route path={LOGIN_URL} element={<Login />} />
 
-        <Route path="/" element={<Navigate to={REGISTER_URL} />} />
-        <Route path={REGISTER_URL} element={<RegistroUsuario />} />
-
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to={TRACKING_URL} />} />
           <Route path={TRACKING_URL} element={<Tracking />} />
@@ -33,6 +30,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           
           <Route path="/" element={<Navigate to={LIST_URL} />} />
           <Route path={LIST_URL} element={<UserList />} />
+
+          <Route path="/" element={<Navigate to={REGISTER_URL} />} />
+          <Route path={REGISTER_URL} element={<RegistroUsuario />} />
         </Route>
 
       </Routes>
