@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from "./EmployeeList.module.css";
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { useUserContext } from "../../contexts/UserContext";
 import { Loading } from "../../components/Loading/Loading";
@@ -146,6 +146,28 @@ export default function UserList() {
         }
     };
 
+    const updateEmployeeID = async (id, updatedData) => {
+        try {
+            // Obtiene todos los documentos de Horas-Trabajadas que tengan el campo "ID" igual al id proporcionado
+            const horasRef = collection(db, 'Horas-Trabajadas');
+            const q = query(horasRef, where("ID", "==", selectedUser.Cédula));
+            const querySnapshot = await getDocs(q);
+    
+            // Si se encuentran documentos, actualiza el campo "ID"
+            querySnapshot.forEach(async (docSnapshot) => {
+                const docRef = doc(db, 'Horas-Trabajadas', docSnapshot.id);
+                await updateDoc(docRef, { ID: updatedData.Cédula }); // Actualiza el campo "ID" con el nuevo valor de "Cédula"
+            });
+    
+            console.log("El campo ID de Horas-Trabajadas fue actualizado exitosamente.");
+            console.log(id);
+            console.log(selectedUser.Cédula);
+            console.log(updatedData.Cédula);
+        } catch (error) {
+            console.error("Error al actualizar el campo ID en Horas-Trabajadas:", error);
+        }
+    };
+
     const handleSave = async () => {
         if (!editableUser?.id) {
             console.error("No se pudo encontrar el ID del usuario.");
@@ -170,6 +192,7 @@ export default function UserList() {
 
         try {
             await updateEmployee(editableUser.id, editableUser);
+            await updateEmployeeID(editableUser.id, editableUser);
             setSelectedUser(editableUser);
             setIsEditing(false);
             setErrors({});
