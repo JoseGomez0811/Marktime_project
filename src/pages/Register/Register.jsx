@@ -104,6 +104,28 @@ export function RegistroUsuario() {
   
     setErrors(newErrors);
   };
+
+  const onSuccess = () => {
+    setShowSuccessAlert(true);
+
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 2000);
+
+    // Blanquear los inputs después del registro exitoso
+    setFormData({
+      nombres: '',
+      apellidos: '',
+      cedula: '',
+      cargo: '',
+      sueldo: '',
+      telefono: '',
+      banco: '',
+      cuenta: '',
+      correo: '',
+      password: '',
+    });
+  };
   
   const validate = () => {
     const newErrors = {};
@@ -135,15 +157,6 @@ export function RegistroUsuario() {
     return Object.keys(newErrors).length === 0; // Retorna true si no hay errores
   };
 
-  const onSuccess = () => {
-    setShowSuccessAlert(true);
-
-    setTimeout(() => {
-      setShowSuccessAlert(false);
-    }, 2000);
-
-    //navigate(REGISTER_URL);
-  };
 
   const onFail = (_error) => {
     setShowSuccessAlert2(true);

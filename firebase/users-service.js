@@ -253,7 +253,57 @@ export async function swapIDHourRegistry(oldCedula, newCedula) {
   }
 }
 
-export async function updateEmployeeStatus(id, newStatus){
+export async function fetchUserTotalHours(cedula) {
+  try {
+    const userQuery = query(
+      collection(db, HOURS_COLLECTION),
+      where("ID", "==", cedula)
+    );
+
+    console.log("cdeula desde fetch: " + cedula);
+    const results = await getDocs(userQuery);
+
+    let totalHours = 0;
+    if (!results.empty) {
+      results.docs.map(async (document) => {
+        const data = document.data();
+        totalHours += data.total_horas || 0; // Asegurar que sea número
+        console.log("hola desde la funcion traer horas");
+      });
+    }
+
+    console.log("Horas traídas con éxito: " + totalHours);
+    return totalHours; // Devuelve totalHours si necesitas usarlo en otro lugar
+  } catch (error) {
+    console.error("Error llamando las horas totales: ", error);
+  }
+}
+
+export async function fetchCedulaByEmail(correo) {
+  try {
+    const userQuery = query(
+      collection(db, USERS_COLLECTION),
+      where("Correo", "==", correo)
+    );
+
+    const results = await getDocs(userQuery);
+
+    if (results.size > 0) {
+      const [userDoc] = results.docs;
+      const returning = userDoc.data().Cédula;
+      console.log("returning: " + returning);
+      return returning;
+    } else {
+      console.log("No se encontró ningún usuario con el correo proporcionado");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al obtener la cedula del usuario: ", error);
+    throw error;
+  }
+}
+
+export async function updateEmployeeStatus(id, newStatus) {
   try {
     const userQuery = query(
       collection(db, USERS_COLLECTION),

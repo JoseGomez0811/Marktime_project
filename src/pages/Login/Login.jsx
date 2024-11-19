@@ -3,11 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import { PROFILE_URL } from "../../constants/urls";
 import { loginWithEmailAndPassword } from "../../../firebase/auth-service";
-import { useUserContext } from "../../contexts/UserContext";
 import { Loading } from "../../components/Loading/Loading";
-import { updateEmployeeStatus } from "../../../firebase/users-service";
-
-
 
 export function Login() {
   const navigate = useNavigate();
@@ -23,15 +19,12 @@ export function Login() {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [status, setStatus] = useState("Desconectado");
-  //const { user } = useUserContext();
-
-    useEffect(() => {
-        // Simula una carga de datos
-        setTimeout(() => {
-        setIsLoading(false);
-        }, 3000);
-    }, []);
+  useEffect(() => {
+    // Simula una carga de datos
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -45,7 +38,7 @@ export function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onSuccess = async() => {
+  const onSuccess = async () => {
     setShowSuccessAlert(true);
     setTimeout(() => {
       navigate(PROFILE_URL);
@@ -54,31 +47,18 @@ export function Login() {
 
   const onFail = (_error) => {
     setShowSuccessAlert2(true);
+    // Asegúrate de que el mensaje de error no se oculte antes de que el usuario lo vea
     setTimeout(() => {
       setShowSuccessAlert2(false);
-    }, 2000);
-    //console.log("LOGIN FAILED, Try Again");
+    }, 5000);  // Mostramos el mensaje de error durante 5 segundos
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (validate()) {
-      const result = await loginWithEmailAndPassword(
-        formData.correo,
-        formData.password,
-        onSuccess,
-        onFail
-      );
-
-      // if (user.Cargo === "Empleador" || user.Cargo === "Recursos Humanos"){
-      //   setStatus("Trabajando");
-      //   updateEmployeeStatus(user.Cédula, "Trabajando");
-      //   console.log("Si entro")
-      // }
-      
-      console.log("Formulario de login enviado:", formData);
+      await loginWithEmailAndPassword(formData.correo, formData.password, onSuccess, onFail);
     } else {
-      console.log("Campos incorectos");
+      console.log("Campos incorrectos");
     }
   };
 
@@ -90,68 +70,67 @@ export function Login() {
     });
   };
 
-
   return (
     <div>
-            {isLoading && <Loading />}
-            {!isLoading && (
-    <div className={styles.root}>
-      {showSuccessAlert && (
-        <div className={`${styles.alert} ${styles.success2}`}>
-          ¡Inicio de sesión exitoso!
-        </div>
-      )}
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <div className={styles.root}>
+          {showSuccessAlert && (
+            <div className={`${styles.alert} ${styles.success2}`}>
+              ¡Inicio de sesión exitoso!
+            </div>
+          )}
 
-      {showSuccessAlert2 && (
-        <div className={`${styles.alert2} ${styles.error2}`}>
-          ¡Error al iniciar sesión! El correo y/o la contraseña son incorrectos
+          {showSuccessAlert2 && (
+            <div className={`${styles.alert2} ${styles.error2}`}>
+              ¡Error al iniciar sesión! El correo y/o la contraseña son incorrectos
+            </div>
+          )}
+          
+          <h1 className={styles.title}>Iniciar Sesión</h1>
+          <div className={styles.card}>
+            <form onSubmit={handleSubmit}>
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="correo">Correo Electrónico:</label>
+                  <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    value={formData.correo}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errors.correo && (
+                    <span className={styles.errorMessage}>{errors.correo}</span>
+                  )}
+                </div>
+              </div>
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="password">Contraseña:</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  {errors.password && (
+                    <span className={styles.errorMessage}>{errors.password}</span>
+                  )}
+                </div>
+              </div>
+              <div className={styles.buttonContainer}>
+                <button type="submit" className={styles.submitBtn}>
+                  Iniciar Sesión
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
-      
-      <h1 className={styles.title}>Iniciar Sesión</h1>
-      <div className={styles.card}>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="correo">Correo Electrónico:</label>
-              <input
-                type="email"
-                id="correo"
-                name="correo"
-                value={formData.correo}
-                onChange={handleChange}
-                required
-              />
-              {/* {errors.correo && (
-                <span className={styles.error}>{errors.correo}</span>
-              )} */}
-            </div>
-          </div>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="password">Contraseña:</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              {/* {errors.password && (
-                <span className={styles.error}>{errors.password}</span>
-              )} */}
-            </div>
-          </div>
-          <div className={styles.buttonContainer}>
-            <button type="submit" className={styles.submitBtn}>
-              Iniciar Sesión
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    )}
     </div>
   );
 }
