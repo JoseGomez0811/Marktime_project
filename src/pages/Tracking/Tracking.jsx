@@ -20,6 +20,8 @@ import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
   getHoursRecords,
+  fetchUserTotalHours,
+  fetchCedulaByEmail,
 } from "../../../firebase/users-service";
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
@@ -50,6 +52,7 @@ export function Tracking() {
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalSalary, setTotalSalary] = useState(0);
+  const [totalHours, setTotalHours] = useState(0);
   const [userCedula, setUserCedula] = useState("");
   const { user } = useUserContext();
 
@@ -57,6 +60,9 @@ export function Tracking() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserEmail(user.email);
+        const cedula = await fetchCedulaByEmail(user.email);
+        setUserCedula(cedula);
+
         try {
           const salary = await getUserSalaryByEmail(user.email);
           setUserSalary(Number(salary));
@@ -86,14 +92,45 @@ export function Tracking() {
     };
   }, [isRunning]);
 
+  // Horas de base
+  useEffect(() => {
+    const fetchHours = async () => {
+      if (userCedula) {
+        try {
+          const fetchedTotalHours = await fetchUserTotalHours(userCedula);
+          setTotalHours(fetchedTotalHours);
+        } catch (error) {
+          console.error("Error al obtener las horas totales:", error);
+        }
+      }
+    };
+
+    fetchHours();
+  }, [userCedula]); // Asegúrate de incluir userCedula en las dependencias
+
+  // total  salary CAMBIAR
+  useEffect(() => {
+    const fetchSalary = async () => {
+      if (totalHours) {
+        try {
+          const hourlyRate = userSalary / 3600;
+          const accumulatedSalary = hourlyRate * totalHours;
+          setTotalSalary(accumulatedSalary);
+        } catch (error) {
+          console.error("Error al obtener las horas totales:", error);
+        }
+      }
+    };
+
+    fetchSalary();
+  }, [totalHours]);
+
   // Fetch records effect
   useEffect(() => {
     const fetchRecords = async () => {
       if (user?.Cédula) {
         try {
           setIsLoading(true);
-          setUserCedula(user.Cédula);
-          setTotalSalary(0);
 
           const records = await getHoursRecords(user.Cédula);
           const validRecords = records.filter((record) => {
@@ -161,6 +198,11 @@ export function Tracking() {
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
       setStartTime(null);
+
+      //CAMBIAR ESTA MONDA PARA PODEr ACTualizarce SOLOOOOO
+      const hourlyRate = userSalary / 3600;
+      const accumulatedSalary = hourlyRate * totalHours;
+      setTotalSalary(accumulatedSalary);
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
@@ -264,7 +306,6 @@ export function Tracking() {
   // Calculate filtered records inside the render
   const filteredHourRecords = filterRecords(hourRecords);
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
-  const hourlyRate = userSalary / 3600;
 
   return (
     <div className={styles.container}>
