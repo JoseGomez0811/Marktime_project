@@ -20,11 +20,9 @@ import {
   addTimeRecordToBDD,
   getUserSalaryByEmail,
   getHoursRecords,
-  updateEmployeeStatus
+  fetchUserTotalHours,
+  fetchCedulaByEmail,
 } from "../../../firebase/users-service";
-import "../../constants/counterWorker"
-import { Loading } from "../../components/Loading/Loading";
-
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
   <div className={styles.overlayConfirmBox}>
@@ -32,10 +30,10 @@ const ConfirmBox = ({ onConfirm, onCancel }) => (
     <div className={styles.confirmBox}>
       {" "}
       <p>¿Está seguro que quiere parar el reloj?</p>{" "}
-      <button className={styles.startButton2} onClick={onConfirm}>
+      <button className={styles.startButton} onClick={onConfirm}>
         Sí
       </button>{" "}
-      <button className={styles.stopButton2} onClick={onCancel}>
+      <button className={styles.stopButton} onClick={onCancel}>
         No
       </button>{" "}
     </div>{" "}
@@ -47,32 +45,28 @@ export function Tracking() {
   const [isRunning, setIsRunning] = useState(false);
   const [records, setRecords] = useState([]);
   const [startTime, setStartTime] = useState(null);
-  const [filter, setFilter] = useState({ type: "all", date: new Date() });
+  const [filter, setFilter] = useState({ type: "day", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [hourRecords, setHourRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState("Desconectado");
-
+  const [totalSalary, setTotalSalary] = useState(0);
+  const [totalHours, setTotalHours] = useState(0);
+  const [userCedula, setUserCedula] = useState("");
   const { user } = useUserContext();
-
-  const [isLoading2, setIsLoading2] = useState(true);
-
-    useEffect(() => {
-        // Simula una carga de datos
-        setTimeout(() => {
-        setIsLoading(false);
-        }, 3000);
-    }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserEmail(user.email);
+        const cedula = await fetchCedulaByEmail(user.email);
+        setUserCedula(cedula);
+
         try {
           const salary = await getUserSalaryByEmail(user.email);
-          setUserSalary(salary);
+          setUserSalary(Number(salary));
+          setTotalSalary(0);
         } catch (error) {
           console.error("Error al obtener el sueldo del usuario:", error);
         }
@@ -84,7 +78,7 @@ export function Tracking() {
 
     return () => unsubscribe();
   }, []);
-  
+
   // Timer effect
   useEffect(() => {
     let intervalId;
@@ -98,12 +92,46 @@ export function Tracking() {
     };
   }, [isRunning]);
 
+  // Horas de base
+  useEffect(() => {
+    const fetchHours = async () => {
+      if (userCedula) {
+        try {
+          const fetchedTotalHours = await fetchUserTotalHours(userCedula);
+          setTotalHours(fetchedTotalHours);
+        } catch (error) {
+          console.error("Error al obtener las horas totales:", error);
+        }
+      }
+    };
+
+    fetchHours();
+  }, [userCedula]); // Asegúrate de incluir userCedula en las dependencias
+
+  // total  salary CAMBIAR
+  useEffect(() => {
+    const fetchSalary = async () => {
+      if (totalHours) {
+        try {
+          const hourlyRate = userSalary / 3600;
+          const accumulatedSalary = hourlyRate * totalHours;
+          setTotalSalary(accumulatedSalary);
+        } catch (error) {
+          console.error("Error al obtener las horas totales:", error);
+        }
+      }
+    };
+
+    fetchSalary();
+  }, [totalHours]);
+
   // Fetch records effect
   useEffect(() => {
     const fetchRecords = async () => {
       if (user?.Cédula) {
         try {
           setIsLoading(true);
+
           const records = await getHoursRecords(user.Cédula);
           const validRecords = records.filter((record) => {
             const hasValidStartTime =
@@ -132,8 +160,6 @@ export function Tracking() {
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
-    setStatus("Trabajando");
-    updateEmployeeStatus(user.Cédula, "Trabajando");
   };
 
   const handleStop = () => {
@@ -171,10 +197,12 @@ export function Tracking() {
       // Agrega el registro a la base de datos
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
-      
       setStartTime(null);
-      setStatus("Desconectado");
-      updateEmployeeStatus(user.Cédula, "Desconectado");
+
+      //CAMBIAR ESTA MONDA PARA PODEr ACTualizarce SOLOOOOO
+      const hourlyRate = userSalary / 3600;
+      const accumulatedSalary = hourlyRate * totalHours;
+      setTotalSalary(accumulatedSalary);
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
@@ -278,13 +306,8 @@ export function Tracking() {
   // Calculate filtered records inside the render
   const filteredHourRecords = filterRecords(hourRecords);
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
-  const hourlyRate = userSalary / 3600;
-  const totalSalary = totalTime * hourlyRate;
 
   return (
-    <div>
-            {isLoading && <Loading />}
-            {!isLoading && (
     <div className={styles.container}>
       <div className={styles.innerContainer}>
         <header className={styles.header}>
@@ -415,8 +438,6 @@ export function Tracking() {
           </div>
         </div>
       </div>
-    </div>
-    )}
     </div>
   );
 }
