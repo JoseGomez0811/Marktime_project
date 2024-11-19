@@ -5,7 +5,6 @@ import { logout } from "../../../firebase/auth-service";
 import React, { useState } from "react";
 import { LogOut, User, Users, UserPlus, Activity } from "lucide-react";
 import { TRACKING_URL, REGISTER_URL, LOGIN_URL, PROFILE_URL, LIST_URL } from "../../constants/urls";
-import { updateEmployeeStatus } from "../../../firebase/users-service";
 
 export const Sidebar = () => {
   const { user } = useUserContext(); // Traemos el contexto de usuario

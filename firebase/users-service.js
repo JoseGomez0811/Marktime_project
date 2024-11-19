@@ -27,7 +27,7 @@ export const insertData = async (formData) => {
       Banco: [formData.banco, parseInt(formData.cuenta)],
       Sueldo: parseFloat(formData.sueldo),
       Password: formData.password,
-      Status: "Desconectado",
+      Status: 'Desconectado' 
     });
     console.log("Documento agregado con éxito");
   } catch (error) {
@@ -168,17 +168,14 @@ async function addRecordByCedula(cedula, startTime, endTime, horas) {
           "fecha fin": endTime,
           horas: horas,
         };
-        const preTotalHours = data.total_horas || 0;
         prevRecords.push(newRecord);
         await updateDoc(docRef, {
           "Registro de Horas": arrayUnion(newRecord),
-          total_horas: preTotalHours + horas,
         });
       });
     } else {
       await addDoc(collection(db, HOURS_COLLECTION), {
         ID: cedula,
-        total_horas: horas,
         "Registro de Horas": [
           {
             "fecha inicio": startTime,
@@ -256,52 +253,27 @@ export async function swapIDHourRegistry(oldCedula, newCedula) {
   }
 }
 
-export async function fetchUserTotalHours(cedula) {
-  try {
-    const userQuery = query(
-      collection(db, HOURS_COLLECTION),
-      where("ID", "==", cedula)
-    );
-
-    console.log("cdeula desde fetch: " + cedula);
-    const results = await getDocs(userQuery);
-
-    let totalHours = 0;
-    if (!results.empty) {
-      results.docs.map(async (document) => {
-        const data = document.data();
-        totalHours += data.total_horas || 0; // Asegurar que sea número
-        console.log("hola desde la funcion traer horas");
-      });
-    }
-
-    console.log("Horas traídas con éxito: " + totalHours);
-    return totalHours; // Devuelve totalHours si necesitas usarlo en otro lugar
-  } catch (error) {
-    console.error("Error llamando las horas totales: ", error);
-  }
-}
-
-export async function fetchCedulaByEmail(correo) {
+export async function updateEmployeeStatus(id, newStatus){
   try {
     const userQuery = query(
       collection(db, USERS_COLLECTION),
-      where("Correo", "==", correo)
+      where("Cédula", "==", id)
     );
 
     const results = await getDocs(userQuery);
 
-    if (results.size > 0) {
-      const [userDoc] = results.docs;
-      const returning = userDoc.data().Cédula;
-      console.log("returning: " + returning);
-      return returning;
+    if (!results.empty) {
+      results.forEach(async (document) => {
+        const docRef = doc(db, USERS_COLLECTION, document.id);
+        await updateDoc(docRef, { Status: newStatus });
+      });
     } else {
-      console.log("No se encontró ningún usuario con el correo proporcionado");
-      return null;
+      console.log("no encontre el archivo");
     }
   } catch (error) {
-    console.error("Error al obtener la cedula del usuario: ", error);
-    throw error;
+    console.error(
+      "Error añadiendo en el update del id del registro de horas",
+      error
+    );
   }
 }
