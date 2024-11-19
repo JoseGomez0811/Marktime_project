@@ -22,7 +22,10 @@ import {
   getHoursRecords,
   fetchUserTotalHours,
   fetchCedulaByEmail,
+  updateEmployeeStatus,
 } from "../../../firebase/users-service";
+import "../../constants/counterWorker";
+import { Loading } from "../../components/Loading/Loading";
 
 const ConfirmBox = ({ onConfirm, onCancel }) => (
   <div className={styles.overlayConfirmBox}>
@@ -30,10 +33,10 @@ const ConfirmBox = ({ onConfirm, onCancel }) => (
     <div className={styles.confirmBox}>
       {" "}
       <p>¿Está seguro que quiere parar el reloj?</p>{" "}
-      <button className={styles.startButton} onClick={onConfirm}>
+      <button className={styles.startButton2} onClick={onConfirm}>
         Sí
       </button>{" "}
-      <button className={styles.stopButton} onClick={onCancel}>
+      <button className={styles.stopButton2} onClick={onCancel}>
         No
       </button>{" "}
     </div>{" "}
@@ -45,7 +48,7 @@ export function Tracking() {
   const [isRunning, setIsRunning] = useState(false);
   const [records, setRecords] = useState([]);
   const [startTime, setStartTime] = useState(null);
-  const [filter, setFilter] = useState({ type: "day", date: new Date() });
+  const [filter, setFilter] = useState({ type: "all", date: new Date() });
   const [userEmail, setUserEmail] = useState("");
   const [userSalary, setUserSalary] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -54,7 +57,18 @@ export function Tracking() {
   const [totalSalary, setTotalSalary] = useState(0);
   const [totalHours, setTotalHours] = useState(0);
   const [userCedula, setUserCedula] = useState("");
+  const [status, setStatus] = useState("Desconectado");
+
   const { user } = useUserContext();
+
+  const [isLoading2, setIsLoading2] = useState(true);
+
+  useEffect(() => {
+    // Simula una carga de datos
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -65,8 +79,7 @@ export function Tracking() {
 
         try {
           const salary = await getUserSalaryByEmail(user.email);
-          setUserSalary(Number(salary));
-          setTotalSalary(0);
+          setUserSalary(salary);
         } catch (error) {
           console.error("Error al obtener el sueldo del usuario:", error);
         }
@@ -131,6 +144,8 @@ export function Tracking() {
       if (user?.Cédula) {
         try {
           setIsLoading(true);
+          setUserCedula(user.Cédula);
+          setTotalSalary(0);
 
           const records = await getHoursRecords(user.Cédula);
           const validRecords = records.filter((record) => {
@@ -160,6 +175,8 @@ export function Tracking() {
   const handleStart = () => {
     setIsRunning(true);
     setStartTime(new Date());
+    setStatus("Trabajando");
+    updateEmployeeStatus(user.Cédula, "Trabajando");
   };
 
   const handleStop = () => {
@@ -197,12 +214,15 @@ export function Tracking() {
       // Agrega el registro a la base de datos
       addTimeRecordToBDD(userEmail, startTime, endTime, duration);
       setTime(0);
+
       setStartTime(null);
 
       //CAMBIAR ESTA MONDA PARA PODEr ACTualizarce SOLOOOOO
       const hourlyRate = userSalary / 3600;
       const accumulatedSalary = hourlyRate * totalHours;
       setTotalSalary(accumulatedSalary);
+      setStatus("Desconectado");
+      updateEmployeeStatus(user.Cédula, "Desconectado");
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
@@ -306,138 +326,148 @@ export function Tracking() {
   // Calculate filtered records inside the render
   const filteredHourRecords = filterRecords(hourRecords);
   const totalTime = records.reduce((acc, record) => acc + record.duration, 0);
+  const hourlyRate = userSalary / 3600;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.innerContainer}>
-        <header className={styles.header}>
-          <h1>Sistema de Control de Tiempo</h1>
-        </header>
+    <div>
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <div className={styles.container}>
+          <div className={styles.innerContainer}>
+            <header className={styles.header}>
+              <h1>Sistema de Control de Tiempo</h1>
+            </header>
 
-        <div className={styles.grid}>
-          <div className={styles.timerCard}>
-            <div className="text-center">
-              <h2 className={styles.timerTitle}>Contador</h2>
-              <div className={styles.timer}>{formatTime(time)}</div>
-              <div className={styles.buttonGroup}>
-                <button
-                  className={styles.startButton}
-                  onClick={handleStart}
-                  disabled={isRunning}
-                >
-                  Iniciar
-                </button>
-                <button
-                  className={styles.stopButton}
-                  onClick={handleStop}
-                  disabled={!isRunning}
-                >
-                  Detener
-                </button>
+            <div className={styles.grid}>
+              <div className={styles.timerCard}>
+                <div className="text-center">
+                  <h2 className={styles.timerTitle}>Contador</h2>
+                  <div className={styles.timer}>{formatTime(time)}</div>
+                  <div className={styles.buttonGroup}>
+                    <button
+                      className={styles.startButton}
+                      onClick={handleStart}
+                      disabled={isRunning}
+                    >
+                      Iniciar
+                    </button>
+                    <button
+                      className={styles.stopButton}
+                      onClick={handleStop}
+                      disabled={!isRunning}
+                    >
+                      Detener
+                    </button>
+                  </div>
+                </div>
+
+                {showConfirm && (
+                  <ConfirmBox
+                    onConfirm={handleConfirmStop}
+                    onCancel={handleCancel}
+                  />
+                )}
               </div>
-            </div>
 
-            {showConfirm && (
-              <ConfirmBox
-                onConfirm={handleConfirmStop}
-                onCancel={handleCancel}
-              />
-            )}
-          </div>
-
-          {showConfirm && (
-            <ConfirmBox onConfirm={handleConfirmStop} onCancel={handleCancel} />
-          )}
-
-          <div className={styles.statsCard}>
-            <div className={styles.statsTitleWrapper}>
-              <h2 className={styles.statsTitle}>Estadísticas</h2>
-            </div>
-            <div className={styles.statsRow}>
-              <div className={styles.statItem}>
-                <p>Tiempo Total Acumulado</p>
-                <p>{formatTime(totalTime)}</p>
-              </div>
-              <div className={styles.statItem}>
-                <p>Salario acumulado</p>
-                <p>{totalSalary.toFixed(1)}$</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.recordsCard}>
-          <div className={styles.recordsHeader}>
-            <h2>Registro de Tiempos</h2>
-            <div className={styles.filterGroup}>
-              <select
-                className={styles.filterSelect}
-                value={filter.type}
-                onChange={(e) =>
-                  setFilter((prev) => ({ ...prev, type: e.target.value }))
-                }
-              >
-                <option value="all">Todos los registros</option>
-                <option value="day">Por día</option>
-                <option value="week">Por semana</option>
-                <option value="month">Por mes</option>
-                <option value="year">Por año</option>
-              </select>
-              {filter.type !== "all" && (
-                <DatePicker
-                  selected={filter.date}
-                  onChange={(date) =>
-                    date && setFilter((prev) => ({ ...prev, date }))
-                  }
-                  dateFormat="dd/MM/yyyy"
-                  className={styles.datePicker}
-                  locale={es}
+              {showConfirm && (
+                <ConfirmBox
+                  onConfirm={handleConfirmStop}
+                  onCancel={handleCancel}
                 />
               )}
+
+              <div className={styles.statsCard}>
+                <div className={styles.statsTitleWrapper}>
+                  <h2 className={styles.statsTitle}>Estadísticas</h2>
+                </div>
+                <div className={styles.statsRow}>
+                  <div className={styles.statItem}>
+                    <p>Tiempo Total Acumulado</p>
+                    <p>{formatTime(totalTime)}</p>
+                  </div>
+                  <div className={styles.statItem}>
+                    <p>Salario acumulado</p>
+                    <p>{totalSalary.toFixed(1)}$</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.recordsCard}>
+              <div className={styles.recordsHeader}>
+                <h2>Registro de Tiempos</h2>
+                <div className={styles.filterGroup}>
+                  <select
+                    className={styles.filterSelect}
+                    value={filter.type}
+                    onChange={(e) =>
+                      setFilter((prev) => ({ ...prev, type: e.target.value }))
+                    }
+                  >
+                    <option value="all">Todos los registros</option>
+                    <option value="day">Por día</option>
+                    <option value="week">Por semana</option>
+                    <option value="month">Por mes</option>
+                    <option value="year">Por año</option>
+                  </select>
+                  {filter.type !== "all" && (
+                    <DatePicker
+                      selected={filter.date}
+                      onChange={(date) =>
+                        date && setFilter((prev) => ({ ...prev, date }))
+                      }
+                      dateFormat="dd/MM/yyyy"
+                      className={styles.datePicker}
+                      locale={es}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>N°</th>
+                      <th>Inicio</th>
+                      <th>Fin</th>
+                      <th>Duración</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan="4" className="text-center">
+                          Cargando registros...
+                        </td>
+                      </tr>
+                    ) : filteredHourRecords.length > 0 ? (
+                      filteredHourRecords.map((record, index) => (
+                        <tr key={record.id || index}>
+                          <td>{record.id || index + 1}</td>
+                          <td>{formatDate(record.startTime)}</td>
+                          <td>{formatDate(record.endTime)}</td>
+                          <td>
+                            {typeof record.horas === "number"
+                              ? formatTime(record.horas)
+                              : "N/A"}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center">
+                          No hay registros disponibles para el período
+                          seleccionado
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>N°</th>
-                  <th>Inicio</th>
-                  <th>Fin</th>
-                  <th>Duración</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      Cargando registros...
-                    </td>
-                  </tr>
-                ) : filteredHourRecords.length > 0 ? (
-                  filteredHourRecords.map((record, index) => (
-                    <tr key={record.id || index}>
-                      <td>{record.id || index + 1}</td>
-                      <td>{formatDate(record.startTime)}</td>
-                      <td>{formatDate(record.endTime)}</td>
-                      <td>
-                        {typeof record.horas === "number"
-                          ? formatTime(record.horas)
-                          : "N/A"}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      No hay registros disponibles para el período seleccionado
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

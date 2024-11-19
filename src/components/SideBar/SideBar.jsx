@@ -2,13 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./SideBar.module.css"; // Asegúrate de que los estilos estén definidos
 import { useUserContext } from "../../contexts/UserContext";
 import { logout } from "../../../firebase/auth-service";
-import React from "react";
+import React, { useState } from "react";
 import { LogOut, User, Users, UserPlus, Activity } from "lucide-react";
 import { TRACKING_URL, REGISTER_URL, LOGIN_URL, PROFILE_URL, LIST_URL } from "../../constants/urls";
+import { updateEmployeeStatus } from "../../../firebase/users-service";
 
 export const Sidebar = () => {
   const { user } = useUserContext(); // Traemos el contexto de usuario
   const navigate = useNavigate(); // Para redirigir después del logout
+  const [status, setStatus] = useState("Desconectado");
   
   console.log('Usuario:', user);
 
@@ -17,6 +19,8 @@ export const Sidebar = () => {
     try {
       await logout(); // Llama la función logout de tu servicio
       navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
+      setStatus("Desconectado");
+      updateEmployeeStatus(user.Cédula, "Desconectado");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

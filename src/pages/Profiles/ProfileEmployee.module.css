@@ -1,5 +1,5 @@
 .userProfile {
-    background-color: #E8EFEC;
+    background-color: #203359;
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -23,7 +23,7 @@
   }
   
   .userName {
-    color: #2E6957;
+    color: white;
     font-size: 50px;
     margin: 0;
     margin-left: 3rem;
@@ -45,22 +45,23 @@
   }
   
   .infoField label {
-    color: #2E6957;
+    color: white;
     font-weight: bold;
     margin-left: 5rem;
     width: 30%; 
     text-align: left; 
+    font-size: 1.4rem;
   }
   
   .infoField label[for="nombreBanco"] {
     margin-left: 5rem;
-    color: #2E6957;
+    color: white;
 
   }
   
   .infoField label[for="numeroCuenta"] {
     margin-left: 5rem;
-    color: #2E6957;
+    color: white;
 
   }
   
@@ -91,10 +92,37 @@
     display: inline-block;
     width: 20px;
     height: 20px;
-    background-color: #2E6957;
+    background-color: #3b82f6;
     mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>');
     mask-repeat: no-repeat;
     mask-position: center;
+  }
+
+  .containerButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+
+  .saveButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 25%;
+    height: 40px;
+    background-color: #418552;
+    border-radius: 15px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .error {
+    color: red;
+    font-size: 12px;
+    margin-left: 10px;
+    white-space: nowrap;
   }
   
   @media (max-width: 600px) {

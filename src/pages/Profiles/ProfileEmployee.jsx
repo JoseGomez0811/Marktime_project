@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useUserContext } from "../../contexts/UserContext";
 import styles from "./ProfileEmployee.module.css";
 import { swapIDHourRegistry } from "../../../firebase/users-service";
+import { Loading } from "../../components/Loading/Loading";
 
 export default function ProfileEmployee() {
   const { user, updateUser } = useUserContext();
@@ -17,7 +18,78 @@ export default function ProfileEmployee() {
     Banco: user?.Banco ?? ["", ""],
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case "nombres":
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.nombres = "Los nombres solo pueden contener letras y acentos.";
+        } else {
+          delete newErrors.nombres;
+        }
+        break;
+      case "apellidos":
+        if (!value || !/^[a-zA-ZáéíóúÁÉÍÓÚ\s]+$/.test(value)) {
+          newErrors.apellidos = "Los apellidos solo pueden contener letras y acentos.";
+        } else {
+          delete newErrors.apellidos;
+        }
+        break;
+      case "Cedula":
+        if (!value || /\D/.test(value)) {
+          newErrors.Cedula = "La cédula solo puede contener dígitos.";
+        } else {
+          delete newErrors.Cedula;
+        }
+        break;
+      case "Sueldo":
+        if (!value || /\D/.test(value)) {
+          newErrors.sueldo = "El sueldo solo puede contener números.";
+        } else {
+          delete newErrors.sueldo;
+        }
+        break;
+      case "NumeroDeTelefono":
+        if (!value || !/^\+?\d+$/.test(value)) {
+          newErrors.telefono = "El número de teléfono solo puede contener dígitos y el signo +.";
+        } else {
+          delete newErrors.telefono;
+        }
+        break;
+      case "Banco[1]":
+        if (!value || /\D/.test(value)) {
+          newErrors.cuenta = "El número de cuenta solo puede contener dígitos.";
+        } else {
+          delete newErrors.cuenta;
+        }
+        break;
+      case "Correo":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value || !emailRegex.test(value)) {
+          newErrors.correo = "El correo electrónico no es válido.";
+        } else {
+          delete newErrors.correo;
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
   const [isEditing, setIsEditing] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -30,10 +102,8 @@ export default function ProfileEmployee() {
         Banco: user.Banco ?? ["", ""],
       });
     }
-
-    if (oldCedula === "" || oldCedula != user?.Cédula) {
-      // console.log("primera cedula: " + oldCed);
-      setOldCedula(oldCedula);
+    if (oldCedula === "" || oldCedula !== user?.Cédula) {
+      setOldCedula(user?.Cédula ?? "");
     }
   }, [user]);
 
@@ -52,12 +122,14 @@ export default function ProfileEmployee() {
         [name]: value,
       }));
     }
+    validateField(name, value);
   };
 
   const handleChangeCedula = (e) => {
-    const { value } = e.target;
+    const { name, value } = e.target;
     setEditableUser((prev) => ({ ...prev, Cedula: value }));
     setNewCedula(value);
+    validateField(name, value);
   };
 
   const handleEdit = () => {
@@ -89,6 +161,9 @@ export default function ProfileEmployee() {
   };
 
   return (
+    <div>
+            {isLoading && <Loading />}
+            {!isLoading && (
     <div className={styles.userProfile}>
       <div className={styles.userHeader}>
         <div className={styles.userAvatar}></div>
@@ -111,7 +186,8 @@ export default function ProfileEmployee() {
               onChange={handleChangeCedula}
               readOnly={!isEditing}
             />
-            {isHR && (
+            
+            {isHR && !isEditing && (
               <button
                 className={styles.editButton}
                 aria-label="Editar Cédula"
@@ -121,6 +197,7 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
+          {errors.Cedula && <span className={styles.error}>{errors.Cedula}</span>}
         </div>
         <div className={styles.infoField}>
           <label htmlFor="telefono">Número de teléfono:</label>
@@ -134,13 +211,18 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            <button
-              className={styles.editButton}
-              aria-label="Editar Número de teléfono"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            {errors.telefono && <span className={styles.error}>{errors.telefono}</span>}
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Número de teléfono"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
@@ -155,19 +237,23 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            <button
-              className={styles.editButton}
-              aria-label="Editar Correo electrónico"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            {errors.correo && <span className={styles.error}>{errors.correo}</span>}
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Correo electrónico"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
           <label htmlFor="cargo">Cargo:</label>
           <div className={styles.inputContainer}>
-            <input
+            <select
               type="text"
               id="cargo"
               name="Cargo"
@@ -175,8 +261,13 @@ export default function ProfileEmployee() {
               value={editableUser.Cargo}
               onChange={handleChange}
               readOnly={!isHR || !isEditing}
-            />
-            {isHR && (
+            >
+            <option value="">Seleccione:</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Empleador">Empleador</option>
+                <option value="Recursos Humanos">Recursos Humanos</option>
+              </select>
+            {isHR && !isEditing &&(
               <button
                 className={styles.editButton}
                 aria-label="Editar Cargo"
@@ -199,7 +290,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isHR || !isEditing}
             />
-            {isHR && (
+            {isHR && !isEditing &&(
               <button
                 className={styles.editButton}
                 aria-label="Editar Sueldo"
@@ -209,11 +300,12 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
+          {errors.sueldo && <span className={styles.error}>{errors.sueldo}</span>}
         </div>
         <div className={styles.infoField}>
           <label htmlFor="nombreBanco">Nombre del banco:</label>
           <div className={styles.inputContainer}>
-            <input
+            <select
               type="text"
               id="nombreBanco"
               name="Banco[0]"
@@ -221,14 +313,32 @@ export default function ProfileEmployee() {
               value={editableUser.Banco[0]}
               onChange={handleChange}
               readOnly={!isEditing}
-            />
-            <button
-              className={styles.editButton}
-              aria-label="Editar Nombre del banco"
-              onClick={handleEdit}
             >
-              <span className={styles.editIcon}></span>
-            </button>
+              <option value="">Seleccione:</option>
+                <option value="Banco de Venezuela">Banco de Venezuela</option>
+                <option value="Banco Bicentenario">Banco Bicentenario</option>
+                <option value="Bancamiga">Bancamiga</option>
+                <option value="Banco Provincial">Banco Provincial</option>
+                <option value="Banco Mercantil">Banco Mercantil</option>
+                <option value="Banco Nacional de Crédito">Banco Nacional de Crédito</option>
+                <option value="Banco Exterior">Banco Exterior</option>
+                <option value="Banesco">Banesco</option>
+                <option value="Banco Plaza">Banco Plaza</option>
+                <option value="Bancaribe">Bancaribe</option>
+                <option value="BanPlus">BanPlus</option>
+                <option value="Banco Venezolano de Crédito">Banco Venezolano de Crédito</option>
+              </select>
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Nombre del banco"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
         <div className={styles.infoField}>
@@ -243,21 +353,30 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            <button
-              className={styles.editButton}
-              aria-label="Editar Número de cuenta"
-              onClick={handleEdit}
-            >
-              <span className={styles.editIcon}></span>
-            </button>
+            {errors.cuenta && <span className={styles.error}>{errors.cuenta}</span>}
+            
+            {!isEditing &&(
+              <button
+                className={styles.editButton}
+                aria-label="Editar Número de cuenta"
+                onClick={handleEdit}
+              >
+                <span className={styles.editIcon}></span>
+              </button>
+            )}
+            
           </div>
         </div>
-        {isEditing && (
-          <button onClick={handleSave} className={styles.saveButton}>
-            Guardar cambios
-          </button>
-        )}
+        <div className={styles.containerButton}>
+          {isEditing && (
+            <button onClick={handleSave} className={styles.saveButton}>
+              Guardar cambios
+            </button>
+          )}
+        </div>
       </div>
+    </div>
+    )}
     </div>
   );
 }
