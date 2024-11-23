@@ -76,16 +76,9 @@ export function Tracking() {
         setUserEmail(user.email);
         const cedula = await fetchCedulaByEmail(user.email);
         setUserCedula(cedula);
-
-        try {
-          const salary = await getUserSalaryByEmail(user.email);
-          setUserSalary(salary);
-        } catch (error) {
-          console.error("Error al obtener el sueldo del usuario:", error);
-        }
+        const salary = await getUserSalaryByEmail(user.email);
+        setUserSalary(salary);
       } else {
-        setUserEmail("");
-        setUserSalary(null);
       }
     });
 
@@ -383,7 +376,7 @@ export function Tracking() {
                 <div className={styles.statsRow}>
                   <div className={styles.statItem}>
                     <p>Tiempo Total Acumulado</p>
-                    <p>{formatTime(totalTime)}</p>
+                    <p>{formatTime(totalHours)}</p>
                   </div>
                   <div className={styles.statItem}>
                     <p>Salario acumulado</p>

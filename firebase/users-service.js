@@ -112,7 +112,9 @@ export async function getUserSalaryByEmail(correo) {
       const [userDoc] = results.docs;
       return userDoc.data().Sueldo;
     } else {
-      console.log("No se encontró ningún usuario con el correo proporcionado");
+      console.log(
+        "No se encontró ningún usuario con el correo proporcionado: " + correo
+      );
       return null;
     }
   } catch (error) {
@@ -271,7 +273,6 @@ export async function fetchUserTotalHours(cedula) {
       results.docs.map(async (document) => {
         const data = document.data();
         totalHours += data.total_horas || 0; // Asegurar que sea número
-        console.log("hola desde la funcion traer horas");
       });
     }
 
