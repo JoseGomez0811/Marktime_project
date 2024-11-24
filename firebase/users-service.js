@@ -112,7 +112,9 @@ export async function getUserSalaryByEmail(correo) {
       const [userDoc] = results.docs;
       return userDoc.data().Sueldo;
     } else {
-      console.log("No se encontró ningún usuario con el correo proporcionado");
+      console.log(
+        "No se encontró ningún usuario con el correo proporcionado: " + correo
+      );
       return null;
     }
   } catch (error) {
@@ -268,12 +270,52 @@ export async function fetchUserTotalHours(cedula) {
       results.docs.map(async (document) => {
         const data = document.data();
         totalHours += data.total_horas || 0; // Asegurar que sea número
-        console.log("hola desde la funcion traer horas");
       });
     }
 
     console.log("Horas traídas con éxito: " + totalHours);
     return totalHours; // Devuelve totalHours si necesitas usarlo en otro lugar
+  } catch (error) {
+    console.error("Error llamando las horas totales: ", error);
+  }
+}
+
+export async function fetchUserTotalSalary(cedula) {
+  try {
+    const userQuery = query(
+      collection(db, HOURS_COLLECTION),
+      where("ID", "==", cedula)
+    );
+
+    console.log("cdeula desde fetch: " + cedula);
+    const results = await getDocs(userQuery);
+
+    let totalHours = 0;
+    if (!results.empty) {
+      results.docs.map(async (document) => {
+        const data = document.data();
+        totalHours += data.total_horas || 0; // Asegurar que sea número
+      });
+    }
+
+    const userQuery2 = query(
+      collection(db, USERS_COLLECTION),
+      where("Cédula", "==", cedula)
+    );
+
+    console.log("cédula desde fetch: " + cedula);
+    const results2 = await getDocs(userQuery2);
+
+    let totalSalary = 0;
+    if (!results2.empty) {
+      results2.docs.map(async (document) => {
+        const data = document.data();
+        totalSalary = totalHours * (data.Sueldo / 3600); // Asegurar que sea número
+      });
+    }
+
+    console.log("Sueldo total acumulado: " + totalSalary);
+    return totalSalary; // Devuelve totalHours si necesitas usarlo en otro lugar
   } catch (error) {
     console.error("Error llamando las horas totales: ", error);
   }

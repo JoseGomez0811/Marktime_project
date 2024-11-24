@@ -14,6 +14,9 @@ export default function UserList() {
     const [isLoading, setIsLoading] = useState(true);
     const [errors, setErrors] = useState({});
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+
     const validateField = (name, value) => {
         const newErrors = { ...errors };
 
@@ -186,17 +189,36 @@ export default function UserList() {
             }
         });
 
-        if (!isValid) {
-            return; // Detener el guardado si hay errores
-        }
+        // if (!isValid) {
+        //     return; // Detener el guardado si hay errores
+        // }
 
         try {
-            await updateEmployee(editableUser.id, editableUser);
-            await updateEmployeeID(editableUser.id, editableUser);
-            setSelectedUser(editableUser);
-            setIsEditing(false);
-            setErrors({});
+            if (Object.keys(errors).length <= 0 ){
+                await updateEmployee(editableUser.id, editableUser);
+                await updateEmployeeID(editableUser.id, editableUser);
+                setSelectedUser(editableUser);
+                setIsEditing(false);
+                setErrors({});
+
+                setShowSuccessAlert(true);
+                setTimeout(() => {
+                setShowSuccessAlert(false);
+                }, 3000);
+            }else{
+                setShowErrorAlert(true)
+                setTimeout(() => {
+                    setShowErrorAlert(false)
+                }, 3000);
+              }
+            
         } catch (error) {
+
+            setShowErrorAlert(true)
+            setTimeout(() => {
+                setShowErrorAlert(false)
+            }, 3000);
+
             console.error("Error al guardar el usuario:", error);
         }
     };
@@ -205,6 +227,19 @@ export default function UserList() {
 
     return (
         <div>
+
+        {showSuccessAlert && (
+            <div className={`${styles.alert} ${styles.success2}`}>
+              ¡Se guardaron los cambios!
+            </div>
+          )}
+
+          {showErrorAlert && (
+            <div className={`${styles.alert2} ${styles.error2}`}>
+              ¡No se guardaron los cambios!
+            </div>
+          )}
+
             {isLoading && <Loading />}
             {!isLoading && (
         <div className={styles.mainContainer}>
@@ -266,8 +301,9 @@ export default function UserList() {
                                             </button>
                                         )}
                                     </div>
-                                    {errors.Cédula && <span className={styles.errorText}>{errors.Cédula}</span>}
+                                    
                                 </div>
+                                {errors.Cédula && <span className={styles.errorText}>{errors.Cédula}</span>}
                                 <div className={styles.infoField}>
                                     <label htmlFor="telefono">Número de teléfono:</label>
                                     <div className={styles.inputContainer}>
@@ -286,8 +322,9 @@ export default function UserList() {
                                             </button>
                                         )}
                                     </div>
-                                    {errors.NumeroDeTelefono && <span className={styles.errorText}>{errors.NumeroDeTelefono}</span>}
+                                    
                                 </div>
+                                {errors.NumeroDeTelefono && <span className={styles.errorText}>{errors.NumeroDeTelefono}</span>}
                                 <div className={styles.infoField}>
                                     <label htmlFor="email">Correo electrónico:</label>
                                     <div className={styles.inputContainer}>
@@ -306,8 +343,9 @@ export default function UserList() {
                                             </button>
                                         )}
                                     </div>
-                                    {errors.Correo && <span className={styles.errorText}>{errors.Correo}</span>}
+                                    
                                 </div>
+                                {errors.Correo && <span className={styles.errorText}>{errors.Correo}</span>}
                                 <div className={styles.infoField}>
                                     <label htmlFor="cargo">Cargo:</label>
                                     <div className={styles.inputContainer}>
@@ -350,8 +388,9 @@ export default function UserList() {
                                             </button>
                                         )}
                                     </div>
-                                    {errors.Sueldo && <span className={styles.error}>{errors.Sueldo}</span>}
+                                    
                                 </div>
+                                {errors.Sueldo && <span className={styles.errorText}>{errors.Sueldo}</span>}
                                 <div className={styles.infoField}>
                                     <label htmlFor="nombreBanco">Nombre del banco:</label>
                                     <div className={styles.inputContainer}>
@@ -403,8 +442,9 @@ export default function UserList() {
                                             </button>
                                         )}
                                     </div>
-                                    {errors.numeroCuenta && <span className={styles.errorText}>{errors.numeroCuenta}</span>}
+                                    
                                 </div>
+                                {errors.numeroCuenta && <span className={styles.errorText}>{errors.numeroCuenta}</span>}
                                 <div className={styles.containerButton}>
                                     {isEditing && (
                                         <button onClick={handleSave} className={styles.saveButton}>

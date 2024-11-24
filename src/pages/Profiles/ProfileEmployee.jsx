@@ -3,6 +3,7 @@ import { useUserContext } from "../../contexts/UserContext";
 import styles from "./ProfileEmployee.module.css";
 import { swapIDHourRegistry } from "../../../firebase/users-service";
 import { Loading } from "../../components/Loading/Loading";
+import { style } from "framer-motion/client";
 
 export default function ProfileEmployee() {
   const { user, updateUser } = useUserContext();
@@ -19,6 +20,9 @@ export default function ProfileEmployee() {
   });
 
   const [errors, setErrors] = useState({});
+
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   const validateField = (name, value) => {
     const newErrors = { ...errors };
@@ -142,28 +146,60 @@ export default function ProfileEmployee() {
       return;
     }
     try {
-      await updateUser(String(user.id), {
-        Cédula: editableUser.Cedula,
-        NumeroDeTelefono: editableUser.NumeroDeTelefono,
-        Correo: editableUser.Correo,
-        Cargo: editableUser.Cargo,
-        Sueldo: editableUser.Sueldo,
-        Banco: editableUser.Banco,
-      });
-
-      if (oldCedula !== newCedula) {
-        await swapIDHourRegistry(oldCedula, newCedula);
+      if (Object.keys(errors).length <= 0 ){
+        await updateUser(String(user.id), {
+          Cédula: editableUser.Cedula,
+          NumeroDeTelefono: editableUser.NumeroDeTelefono,
+          Correo: editableUser.Correo,
+          Cargo: editableUser.Cargo,
+          Sueldo: editableUser.Sueldo,
+          Banco: editableUser.Banco,
+        });
+  
+        if (oldCedula !== newCedula) {
+          await swapIDHourRegistry(oldCedula, newCedula);
+        }
+        setIsEditing(false);
+        setShowSuccessAlert(true);
+        setTimeout(() => {
+          setShowSuccessAlert(false);
+        }, 3000);
+      }else{
+        setShowErrorAlert(true)
+        setTimeout(() => {
+          setShowErrorAlert(false)
+        }, 3000);
       }
-      setIsEditing(false);
+      
     } catch (error) {
+      setShowErrorAlert(true)
+      setTimeout(() => {
+        setShowErrorAlert(false)
+      }, 3000);
+      
       console.error("Error al guardar el usuario:", error);
     }
   };
 
   return (
     <div>
+
+          {showSuccessAlert && (
+            <div className={`${styles.alert} ${styles.success2}`}>
+              ¡Se guardaron los cambios!
+            </div>
+          )}
+
+          {showErrorAlert && (
+            <div className={`${styles.alert2} ${styles.error2}`}>
+              ¡No se guardaron los cambios!
+            </div>
+          )}
+
+
             {isLoading && <Loading />}
             {!isLoading && (
+
     <div className={styles.userProfile}>
       <div className={styles.userHeader}>
         <div className={styles.userAvatar}></div>
@@ -197,8 +233,9 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
-          {errors.Cedula && <span className={styles.error}>{errors.Cedula}</span>}
+          
         </div>
+        {errors.Cedula && <span className={styles.error}>{errors.Cedula}</span>}
         <div className={styles.infoField}>
           <label htmlFor="telefono">Número de teléfono:</label>
           <div className={styles.inputContainer}>
@@ -211,7 +248,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            {errors.telefono && <span className={styles.error}>{errors.telefono}</span>}
+            
             
             {!isEditing &&(
               <button
@@ -224,7 +261,9 @@ export default function ProfileEmployee() {
             )}
             
           </div>
+          
         </div>
+        {errors.telefono && <span className={styles.error}>{errors.telefono}</span>}
         <div className={styles.infoField}>
           <label htmlFor="email">Correo electrónico:</label>
           <div className={styles.inputContainer}>
@@ -237,7 +276,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            {errors.correo && <span className={styles.error}>{errors.correo}</span>}
+            
             {!isEditing &&(
               <button
                 className={styles.editButton}
@@ -250,6 +289,7 @@ export default function ProfileEmployee() {
             
           </div>
         </div>
+        {errors.correo && <span className={styles.error}>{errors.correo}</span>}
         <div className={styles.infoField}>
           <label htmlFor="cargo">Cargo:</label>
           <div className={styles.inputContainer}>
@@ -300,8 +340,9 @@ export default function ProfileEmployee() {
               </button>
             )}
           </div>
-          {errors.sueldo && <span className={styles.error}>{errors.sueldo}</span>}
+          
         </div>
+        {errors.sueldo && <span className={styles.error}>{errors.sueldo}</span>}
         <div className={styles.infoField}>
           <label htmlFor="nombreBanco">Nombre del banco:</label>
           <div className={styles.inputContainer}>
@@ -353,7 +394,7 @@ export default function ProfileEmployee() {
               onChange={handleChange}
               readOnly={!isEditing}
             />
-            {errors.cuenta && <span className={styles.error}>{errors.cuenta}</span>}
+            
             
             {!isEditing &&(
               <button
@@ -367,6 +408,7 @@ export default function ProfileEmployee() {
             
           </div>
         </div>
+        {errors.cuenta && <span className={styles.error}>{errors.cuenta}</span>}
         <div className={styles.containerButton}>
           {isEditing && (
             <button onClick={handleSave} className={styles.saveButton}>
