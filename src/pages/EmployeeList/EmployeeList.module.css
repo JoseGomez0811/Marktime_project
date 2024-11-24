@@ -228,6 +228,10 @@ label[for="numeroCuenta"] {
   background-color: #2e593e; /* Color de fondo más oscuro al hacer hover */
 }
 
+.errorText{
+  color: #F5533B;
+}
+
 /* Resto de los estilos se mantienen igual... */
 
 @media (max-width: 768px) {

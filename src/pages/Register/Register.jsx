@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 import { insertData } from "../../../firebase/users-service";
 import { Loading } from "../../components/Loading/Loading";
 
+import {query, collection, where, getDocs} from "firebase/firestore";
+import { db } from "../../../firebase/config";
+
 export function RegistroUsuario() {
   const notifyError = (mensaje) => toast.error(mensaje);
   const navigate = useNavigate();
@@ -27,6 +30,7 @@ export function RegistroUsuario() {
   const [errors, setErrors] = useState({});
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showSuccessAlert2, setShowSuccessAlert2] = useState(false);
+  const [showDuplicateEmailAlert, setShowDuplicateEmailAlert] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,7 +41,44 @@ export function RegistroUsuario() {
         }, 3000);
     }, []);
 
-  const validateField = (name, value) => {
+  // Función para verificar si la cédula ya está registrada en Firebase
+  const isCedulaRegistered = async (cedula) => {
+    try {
+      const userQuery = query(
+        collection(db, "Registro-Empleados"),
+        where("Cédula", "==", String(cedula))
+      );
+  
+      const results = await getDocs(userQuery);
+      console.log("YA EXISTE")
+      // Verifica si hay al menos un documento en los resultados
+      return !results.empty;
+    } catch (error) {
+      console.error("Error al verificar la cédula: ", error);
+      console.log("NO EXISTE")
+      return false; // Devuelve `false` en caso de error, para evitar bloquear el flujo
+    }
+  };
+
+  const isEmailRegistered = async (correo) => {
+    try {
+      const userQuery = query(
+        collection(db, "Registro-Empleados"),
+        where("Correo", "==", String(correo))
+      );
+  
+      const results = await getDocs(userQuery);
+      console.log("YA EXISTE")
+      // Verifica si hay al menos un documento en los resultados
+      return !results.empty;
+    } catch (error) {
+      console.error("Error al verificar el correo: ", error);
+      console.log("NO EXISTE")
+      return false; // Devuelve `false` en caso de error, para evitar bloquear el flujo
+    }
+  };
+
+  const validateField = async (name, value) => {
     const newErrors = { ...errors };
   
     switch (name) {
@@ -55,13 +96,23 @@ export function RegistroUsuario() {
           delete newErrors.apellidos;
         }
         break;
+        // case 'cedula':
+        //   if (!value || /\D/.test(value)) {
+        //     newErrors.cedula = 'La cédula solo puede contener dígitos.';
+        //   } else {
+        //     delete newErrors.cedula;
+        //   }
+        //   break;
         case 'cedula':
           if (!value || /\D/.test(value)) {
-            newErrors.cedula = 'La cédula solo puede contener dígitos.';
+            newErrors.cedula = "La cédula solo puede contener dígitos.";
+          } else if (await isCedulaRegistered(value)) {
+            newErrors.cedula = "Ya hay un usuario registrado con esa cédula.";
           } else {
-            delete newErrors.cedula;
+            delete newErrors.cedula; // Elimina cualquier error previo si la validación pasa
           }
           break;
+
       case 'sueldo':
         if (!value || /\D/.test(value)) {
           newErrors.sueldo = 'El sueldo solo puede contener números.';
@@ -83,14 +134,35 @@ export function RegistroUsuario() {
             delete newErrors.cuenta;
           }
           break;
+      // case 'correo':
+      //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      //   if (!value || !emailRegex.test(value)) {
+      //     newErrors.correo = 'El correo electrónico no es válido.';
+      //   } else if (await isEmailRegistered(value)) {
+      //     newErrors.correo = "Ya hay un usuario registrado con ese correo.";
+      //   }else {
+      //     delete newErrors.correo;
+      //   }
+      //   break;
+
       case 'correo':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!value || !emailRegex.test(value)) {
-          newErrors.correo = 'El correo electrónico no es válido.';
-        } else {
-          delete newErrors.correo;
+        if (!value) {
+          newErrors.correo = "El correo es obligatorio.";
+        } else if (/\s/.test(value)) {
+          newErrors.correo = "El correo no puede contener espacios.";
+        } else if (/[&='+\-,<>]/.test(value)) {
+          newErrors.correo = "El correo no puede contener los caracteres &, =, ', -, +, , o < >.";
+        } else if (/\.\./.test(value)) {
+          newErrors.correo = "El correo no puede contener más de un punto consecutivo.";
+        } else if (!/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(value)) {
+          newErrors.correo = "El correo debe ser válido (ej. usuario@dominio.com).";
+        } else if (await isEmailRegistered(value)) {
+          newErrors.correo = "Ya hay un usuario registrado con ese correo.";
+        }else {
+          delete newErrors.correo; // Elimina cualquier error previo si la validación pasa
         }
         break;
+
         case 'password':
           if (!value || value.length < 8 || !/[A-Z]/.test(value) || !/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
             newErrors.password = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un carácter especial.';
@@ -188,6 +260,15 @@ export function RegistroUsuario() {
     } catch (error) {
       console.error("Error al registrar los datos: ", error);
       //alert("Error al registrar los datos");
+
+      // Verifica si el error es por correo duplicado
+      if (error.code === "auth/email-already-in-use") {
+        setShowDuplicateEmailAlert(true);
+        setTimeout(() => setShowDuplicateEmailAlert(false), 2000);
+      } else {
+        onFail();
+      }
+
     }
   };
 
@@ -219,6 +300,12 @@ export function RegistroUsuario() {
           ¡Error al registrar un nuevo usuario!
         </div>
       )}
+
+      {/* {showDuplicateEmailAlert && (
+        <div className={`${styles.alert2} ${styles.error2}`}>
+          ¡El correo ya está registrado!
+        </div>
+      )} */}
 
       <h1>Registro de Usuario</h1>
       <div className={styles.card}>
