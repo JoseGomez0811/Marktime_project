@@ -70,6 +70,7 @@ useEffect(() => {
 }, []);
   
   const handleStop = async () => {
+    navigate(TRACKING_URL);
     console.log(user.Cargo)
     const status = await fetchUsers();
     console.log(status)
@@ -86,10 +87,16 @@ useEffect(() => {
   // Maneja el cierre de sesión
   const handleLogout = async () => {
     try {
-      await logout(); // Llama la función logout de tu servicio
-      navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
-      setStatus("Desconectado");
-      updateEmployeeStatus(user.Cédula, "Desconectado");
+      const status = await fetchUsers();
+      if(user.Cargo === "Empleado" && status === "Trabajando"){
+        navigate(TRACKING_URL);
+        setShowConfirm(true);
+      }else{
+        await logout(); // Llama la función logout de tu servicio
+        navigate(LOGIN_URL); // Redirige al login después de cerrar sesión
+        setStatus("Desconectado");
+        updateEmployeeStatus(user.Cédula, "Desconectado");
+      }
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

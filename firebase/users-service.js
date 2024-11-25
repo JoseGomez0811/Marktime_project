@@ -269,7 +269,10 @@ export async function fetchUserTotalHours(cedula) {
     if (!results.empty) {
       results.docs.map(async (document) => {
         const data = document.data();
-        totalHours += data.total_horas || 0; // Asegurar que sea número
+        data["Registro de Horas"].forEach((registro) => {
+          totalHours += registro.horas || 0; // Sumar 0 si el campo 'horas' no existe
+          console.log("NOMBRES2222", registro.horas);
+        }); // Asegurar que sea número
       });
     }
 
@@ -282,44 +285,53 @@ export async function fetchUserTotalHours(cedula) {
 
 export async function fetchUserTotalSalary(cedula) {
   try {
+    // Consulta de las horas totales
     const userQuery = query(
       collection(db, HOURS_COLLECTION),
       where("ID", "==", cedula)
     );
 
-    console.log("cdeula desde fetch: " + cedula);
+    console.log("Cédula desde fetch: " + cedula);
     const results = await getDocs(userQuery);
 
     let totalHours = 0;
     if (!results.empty) {
-      results.docs.map(async (document) => {
+      for (const document of results.docs) {
         const data = document.data();
-        totalHours += data.total_horas || 0; // Asegurar que sea número
-      });
+        totalHours += data.horas || 0;
+        data["Registro de Horas"].forEach((registro) => {
+          totalHours += registro.horas || 0; // Sumar 0 si el campo 'horas' no existe
+          console.log("NOMBRES", registro.horas);
+        }); // Asegurar que sea número
+        
+      }
     }
 
+    // Consulta para obtener el salario
     const userQuery2 = query(
       collection(db, USERS_COLLECTION),
       where("Cédula", "==", cedula)
     );
 
-    console.log("cédula desde fetch: " + cedula);
+    console.log("Cédula desde fetch: " + cedula);
     const results2 = await getDocs(userQuery2);
 
     let totalSalary = 0;
     if (!results2.empty) {
-      results2.docs.map(async (document) => {
+      for (const document of results2.docs) {
         const data = document.data();
-        totalSalary = totalHours * (data.Sueldo / 3600); // Asegurar que sea número
-      });
+        totalSalary = totalHours * (data.Sueldo / 3600); 
+        console.log("Sueldo calculado", totalSalary);
+      }
     }
 
     console.log("Sueldo total acumulado: " + totalSalary);
-    return totalSalary; // Devuelve totalHours si necesitas usarlo en otro lugar
+    return totalSalary; // Devuelve el sueldo total calculado
   } catch (error) {
-    console.error("Error llamando las horas totales: ", error);
+    console.error("Error calculando el sueldo total: ", error);
   }
 }
+
 
 export async function fetchCedulaByEmail(correo) {
   try {

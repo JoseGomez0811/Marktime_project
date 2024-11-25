@@ -135,6 +135,8 @@ export function Tracking() {
         try {
           const fetchedTotalSalary = await fetchUserTotalSalary(userCedula);
           setTotalSalary(fetchedTotalSalary);
+          console.log("salario acumulado", fetchedTotalSalary)
+          console.log("CEDULA", userCedula)
         } catch (error) {
           console.error("Error al obtener el sueldo total:", error);
         }
@@ -276,22 +278,8 @@ export function Tracking() {
       setTime(0);
 
       setStartTime(null);
-
-      //CAMBIAR ESTA MONDA PARA PODEr ACTualizarce SOLOOOOO
-      // const hourlyRate = userSalary / 3600;
-      // const accumulatedSalary = hourlyRate * totalHours;
-      // setTotalSalary(accumulatedSalary);
       setStatus("Desconectado");
       updateEmployeeStatus(user.Cédula, "Desconectado");
-
-      // // Sincronizar datos con la base de datos en segundo plano
-      // setTimeout(() => {
-      //   fetchHours(); // Actualiza totalHours desde la base de datos
-      //   fetchSalary(); // Actualiza totalSalary desde la base de datos
-      // }, 0);
-
-      // Forzar actualización de horas y salario
-      // setUpdateFlag((prev) => !prev);
     }
     setShowConfirm(false); // Oculta el recuadro de confirmación
   };
