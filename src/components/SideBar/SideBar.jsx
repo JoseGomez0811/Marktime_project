@@ -69,19 +69,46 @@ useEffect(() => {
   return () => clearInterval(intervalId);
 }, []);
   
-  const handleStop = async () => {
-    navigate(TRACKING_URL);
-    console.log(user.Cargo)
-    const status = await fetchUsers();
+  // const handleStop = async () => {
+  //   // if(user.Cargo === "Empleado"){
+  //   //   navigate(TRACKING_URL);
+  //   //   const status = await fetchUsers();
+  //   //   if(status === "Trabajando"){
+  //   //     setShowConfirm(true);
+  //   //   }
+  //   // }
+
+
+
+
+  //   console.log(user.Cargo)
+  //   const status = await fetchUsers();
+  //   console.log(status)
+
+
+  //   if(user.Cargo === "Empleado" && status === "Trabajando"){
+  //     navigate(TRACKING_URL);
+  //     setShowConfirm(true);
+  //   }
+  // };
+
+  const handleStop = async (event, url) => {
+    event.preventDefault(); // Evita que Link haga la redirección automática
+  
+    const status = await fetchUsers(); // Obtiene el estado del usuario
+    console.log(user.Cargo, status);
     console.log(status)
-    if(user.Cargo === "Empleado" && status === "Trabajando"){
-      setShowConfirm(true);
+
+    if (user?.Cargo === "Empleado" && status === "Trabajando") {
+      setShowConfirm(true); // Muestra el ConfirmBox si las condiciones se cumplen
+    } else {
+      navigate(url); // Navega solo si no está trabajando
     }
   };
+  
 
   const handleCancel = () => {
     setShowConfirm(false);
-    navigate(TRACKING_URL);
   };
 
   // Maneja el cierre de sesión
@@ -121,30 +148,30 @@ useEffect(() => {
           </span>
         </div>
 
-        <nav className={styles.sidebarNav} onClick={handleStop}>
+        <nav className={styles.sidebarNav}>
           
-          <Link to={PROFILE_URL} className={styles.navItem}>
+          <Link to={PROFILE_URL} className={styles.navItem} onClick={(event) => handleStop(event, PROFILE_URL)}>
             <User size={20} className={styles.userIcon}/>
             <span>Perfil</span>
           </Link>
 
           {/* Renderiza según el tipo de usuario */}
           {user?.Cargo === 'Empleado' && (
-            <Link to={TRACKING_URL} className={styles.navItem}>
+            <Link to={TRACKING_URL} className={styles.navItem} onClick={(event) => handleStop(event, TRACKING_URL)}>
               <Activity size={20} className={styles.activityIcon}/>
               <span>Registro Horas</span>
             </Link>
           )}
 
           {(user?.Cargo === 'Empleador' || user?.Cargo === 'Recursos Humanos') && (
-            <Link to={LIST_URL} className={styles.navItem}>
+            <Link to={LIST_URL} className={styles.navItem} onClick={(event) => handleStop(event, LIST_URL)}>
               <Users size={20} className={styles.usersIcon}/>
               <span>Listado de Empleados</span>
             </Link>
           )}
 
           {user?.Cargo === 'Recursos Humanos' && (
-            <Link to={REGISTER_URL} className={styles.navItem}>
+            <Link to={REGISTER_URL} className={styles.navItem} onClick={(event) => handleStop(event, REGISTER_URL)}>
               <UserPlus size={20} className={styles.userplusIcon}/>
               <span>Registrar Empleado</span>
             </Link>
