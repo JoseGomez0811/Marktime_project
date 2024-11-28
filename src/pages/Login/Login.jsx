@@ -41,6 +41,7 @@ export function Login() {
   const onSuccess = async () => {
     setShowSuccessAlert(true);
     setTimeout(() => {
+
       navigate(PROFILE_URL);
     }, 2000);
   };

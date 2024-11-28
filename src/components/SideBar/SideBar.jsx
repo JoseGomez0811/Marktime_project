@@ -31,7 +31,6 @@ export const Sidebar = () => {
   
   console.log('Usuario:', user);
 
-
   const fetchUsers = async () => {
     try {
       try {
